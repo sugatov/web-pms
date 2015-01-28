@@ -1,0 +1,22 @@
+{
+  "name": "Hotel-AIS",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "bower_components"
+  ],
+  "dependencies": {
+    "underscore": "latest",
+    "semantic-ui": "latest",
+    "angular": "latest",
+    "angular-route": "latest",
+    "knockoutjs": "latest",
+    "knockout-mapping": "latest",
+    "moment": "latest",
+    "jquery": ">= 1.9 < 2.0",
+    "less.js": ">= 1.7 < 2.2",
+    "json2": "latest"
+  }
+}

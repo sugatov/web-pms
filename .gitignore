@@ -1,0 +1,7 @@
+/*.sublime-workspace
+/hotel/lib/vendor
+/public_html/assets/bower_components
+/.idea
+/*.sublime-project
+/hotel/data/cache
+/hotel/lib/composer.lock

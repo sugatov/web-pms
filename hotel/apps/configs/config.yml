@@ -1,0 +1,16 @@
+slim:
+    !imports:
+        - './slim.yml'
+
+app:
+    timezone: 'Europe/Moscow'
+    defaultCurrency: 'RUB'
+
+    debug: true
+    sqlLog: false
+
+    salt: '!@#$%^&*()'
+
+    database:
+        !imports:
+            - './database.yml'

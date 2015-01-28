@@ -1,0 +1,7 @@
+mng-home:
+    active: true
+    pattern: '/'
+    methods:
+        - 'GET'
+    controller: 'MngHome'
+    action: 'index'
