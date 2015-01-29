@@ -1,5 +1,5 @@
 <?php
-namespace Hotel;
+use Controller;
 
 class RestController extends Controller
 {

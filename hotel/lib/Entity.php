@@ -1,6 +1,4 @@
 <?php
-namespace Hotel;
-
 use ServiceLocator;
 
 class Entity

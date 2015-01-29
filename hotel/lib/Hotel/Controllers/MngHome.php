@@ -1,7 +1,7 @@
 <?php
 namespace Hotel\Controllers;
 
-use \Hotel\Controller;
+use \Controller;
 
 class MngHome extends Controller
 {

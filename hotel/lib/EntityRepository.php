@@ -1,8 +1,6 @@
 <?php
-namespace Hotel;
-
 use \Doctrine\ORM\EntityRepository as DEntityRepository;
-use \ServiceLocator;
+use ServiceLocator;
 
 class EntityRepository extends DEntityRepository
 {

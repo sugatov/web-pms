@@ -1,7 +1,5 @@
 <?php
-namespace Hotel;
-
-use \ServiceLocator;
+use ServiceLocator;
 
 class Service
 {
