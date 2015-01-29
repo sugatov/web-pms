@@ -1,8 +1,8 @@
 /*.sublime-workspace
-/hotel/lib/vendor
+/source/lib/vendor
 /public_html/assets/bower_components
 /.idea
 /*.sublime-project
-/hotel/data/cache
-/hotel/lib/composer.lock
-/hotel/lib/Hotel/Entities/*.php~
+/source/data/cache
+/source/lib/composer.lock
+/source/lib/Hotel/Entities/*.php~
