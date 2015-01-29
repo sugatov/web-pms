@@ -5,4 +5,4 @@
 /*.sublime-project
 /source/data/cache
 /source/lib/composer.lock
-/source/lib/Hotel/Entities/*.php~
+/source/lib/App/Entities/*.php~

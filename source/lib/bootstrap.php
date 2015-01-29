@@ -4,9 +4,6 @@ use \Doctrine\ORM as ORM;
 use \Doctrine\DBAL\Types\Type as Type;
 use \Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
 use \Doctrine\StdErrSQLLogger;
-use \Zend\Permissions\Acl\Acl;
-use \Zend\Permissions\Acl\Role\GenericRole as Role;
-use \Zend\Permissions\Acl\Resource\GenericResource as Resource;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
@@ -89,10 +86,6 @@ return call_user_func(function () {
 
     $SL['timer'] = new \Timer();
 
-    $SL['factory'] = function () {
-        return new \Services\Factory();
-    };
-
     $SL['config'] = function($SL) {
         return new \YamlSource($SL['LOCAL_APPS'] . '/configs/config.yml', $SL['PATHS']);
     };
@@ -112,8 +105,8 @@ return call_user_func(function () {
                     new OSS\Metadata\Driver\YamlDriver(
                         new OSS\Metadata\Driver\FileLocator(
                             array(
-                                'Hotel\\Entities' => $SL['LOCAL_LIB'] . '/Hotel/Entities',
-                                '\\'              => $SL['LOCAL_LIB']
+                                'App\\Entities' => $SL['LOCAL_LIB'] . '/App/Entities',
+                                '\\'            => $SL['LOCAL_LIB']
                             )
                         )
                     ),
@@ -134,44 +127,28 @@ return call_user_func(function () {
         );
 
         $configuration = ORM\Tools\Setup::createAnnotationMetadataConfiguration(
-            array($SL['LOCAL_LIB'] . "/Hotel/Entities"),
+            array($SL['LOCAL_LIB'] . "/App/Entities"),
             $SL['config']['app']['debug']
         );
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
-        $configuration->addEntityNamespace('Hotel', 'Hotel\\Entities');
+        $configuration->addEntityNamespace('App', 'App\\Entities');
 
         $em = ORM\EntityManager::create(
             $SL['config']['app']['database']['config'],
-            /*array(
-                'driver'        => $SL['config']['app']['database']['driver'],
-                'host'          => $SL['config']['app']['database']['host'],
-                'user'          => $SL['config']['app']['database']['user'],
-                'password'      => $SL['config']['app']['database']['password'],
-                'dbname'        => $SL['config']['app']['database']['database'],
-                'charset'       => 'utf8',
-                'driverOptions' => array(
-                    1002 => 'SET NAMES utf8'
-                )
-            ),*/
             $configuration,
             $eventManager
         );
         
-        
-        Type::addType('money', 'Money\Doctrine2\MoneyType');
         Type::addType('kdate', 'Doctrine\Types\KDateType');
 
         $platform = $em->getConnection()->getDatabasePlatform();
-        $platform->markDoctrineTypeCommented(Type::getType('money'));
         $platform->markDoctrineTypeCommented(Type::getType('kdate'));
         $platform->markDoctrineTypeCommented(Type::getType('date'));
         $platform->markDoctrineTypeCommented(Type::getType('datetime'));
         $platform->markDoctrineTypeCommented(Type::getType('datetimetz'));
-        
-        // $em->getConnection()->getDatabasePlatform()->registerDoctrineTypeMapping('MoneyType','money');
-        
+               
         return $em;
     };
 
@@ -195,13 +172,11 @@ return call_user_func(function () {
             'cache' => $SL['LOCAL_DATA'] . '/cache/templates'
         );
         $view->parserExtensions = array(
-            new \Slim\Views\TwigExtension(),
-            //new \Slim\Views\MyTwigExtension(),
+            new \Slim\Views\TwigExtension()
         );
         $config['view']           = $view;
         $config['templates.path'] = $SL['LOCAL_APPS'] . '/templates';
         $app = new \Slim\Slim($config);
-        //new \Services\SlimControllerMapper($app, $SL['APPPATH'] . '/config/routes');
         array_walk($SL['config']['app']['routes'], function($routes, $mapTo) use ($SL, $app) {
             $SL['routerFactory']($app, $mapTo, $routes);
         });
@@ -236,7 +211,7 @@ return call_user_func(function () {
     });
 
     $SL['getControllerClassName'] = $SL->protect(function($name) {
-        return 'Hotel\\Controllers\\' . ucfirst($name);
+        return 'App\\Controllers\\' . ucfirst($name);
     });
     $SL['controllerFactory'] = $SL->protect(function($name) use ($SL) {
         $className = $SL['getControllerClassName']($name);
@@ -244,32 +219,9 @@ return call_user_func(function () {
     });
 
     $SL['getEntityClassName'] = $SL->protect(function($name) {
-        return 'Hotel\\Entities\\' . ucfirst($name);
+        return 'App\\Entities\\' . ucfirst($name);
     });
 
-    $SL['acl'] = function($SL) {
-        $acl = new Acl();
-        $acl->addRole(new Role('customer'))
-            ->addRole(new Role('operator'), 'customer')
-            ->addRole(new Role('manager'), 'operator')
-            ->addRole(new Role('superuser'), 'manager');
-        $acl->addResource(new Resource('room'))
-            ->addResource(new Resource('service'))
-            ->addResource(new Resource('payment'))
-            ->addResource(new Resource('report'))
-            ->addResource(new Resource('user'));
-        $acl->deny(null, null, null) // по-умолчанию запретить всё
-            ->allow('customer', 'room', array('view', 'book', 'cancellation'))
-            ->allow('customer', 'service', 'view')
-            ->allow('operator', 'room', 'status')
-            ->allow('operator', 'service', 'provide')
-            ->allow('operator', 'payment', array('view', 'add'))
-            ->allow('manager', 'room', array('add', 'remove', 'modify'))
-            ->allow('manager', 'service', array('add', 'remove', 'modify'))
-            ->allow('manager', 'report', 'view')
-            ->allow('superuser', 'user', array('add', 'remove', 'modify'));
-        return $acl;
-    };
 
     return $SL;
 });

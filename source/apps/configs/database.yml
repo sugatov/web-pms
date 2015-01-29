@@ -2,9 +2,9 @@ tableprefix : ''
 config:
     driver        : pdo_mysql
     host          : localhost
-    user          : hotel
-    password      : hotel
-    dbname        : hotel
+    user          : hist
+    password      : hist
+    dbname        : hist
     charset       : utf8
     driverOptions :
         1002 : 'SET NAMES utf8'

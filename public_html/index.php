@@ -1,2 +1,3 @@
 <?php
-header('Location: /mng/');
+
+echo 'Work in progress.';
