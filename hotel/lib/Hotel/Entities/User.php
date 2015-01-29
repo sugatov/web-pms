@@ -1,5 +1,5 @@
 <?php
-namespace Entities;
+namespace Hotel\Entities;
 
 use \Doctrine\Common\Collections\ArrayCollection;
 
@@ -15,4 +15,14 @@ class User extends \Hotel\Entity {
      */
     protected $id = null;
     
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 }
