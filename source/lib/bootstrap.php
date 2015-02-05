@@ -222,6 +222,10 @@ return call_user_func(function () {
         return 'App\\Entities\\' . ucfirst($name);
     });
 
+    $SL['markdownParser'] = function($SL) {
+        return new \MarkdownParser();
+    };
+
 
     return $SL;
 });
