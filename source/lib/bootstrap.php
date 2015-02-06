@@ -226,6 +226,9 @@ return call_user_func(function () {
         return new \MarkdownParser();
     };
 
+    $SL['url'] = function() use ($SL) {
+        return new \SlimURL($SL['app']);
+    };
 
     return $SL;
 });
