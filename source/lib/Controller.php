@@ -1,58 +1,93 @@
 <?php
-use ServiceLocator;
+use \Timer;
+use \Slim;
+use \Opensoft\SimpleSerializer\Serializer;
+
 
 class Controller
 {
+    /**
+     * @var Slim\Slim
+     */
     protected $app;
+    /**
+     * @var Slim\Environment
+     */
+    protected $environment;
+    /**
+     * @var Slim\View
+     */
     protected $view;
+    /**
+     * @var Slim\Router
+     */
     protected $router;
+    /**
+     * @var Slim\Http\Request
+     */
     protected $request;
+    /**
+     * @var Slim\Http\Response
+     */
     protected $response;
+    /**
+     * @var Serializer
+     */
     protected $serializer;
-    protected $config;
+    /**
+     * @var Timer
+     */
+    protected $timer;
 
+    /**
+     * @var array
+     */
     protected $errors;
-
+    /**
+     * @var bool
+     */
     protected $isJsonResponse;
+    /**
+     * @var string
+     */
     protected $errorHandlerTemplate;
+    /**
+     * @var array
+     */
+    protected $globalViewScope;
 
 
-    public function __construct()
+    /**
+     * @param Slim\Slim     $application
+     * @param Serializer    $serializer
+     * @param Timer         $timer
+     * @param array         $globalViewScope    Scope to share through all views
+     */
+    public function __construct(Slim\Slim $application, Serializer $serializer, Timer $timer, $globalViewScope)
     {
-        $this->app                  = $this->getService('app');
+        $this->app                  = $application;
+        $this->environment          = $this->app->environment();
         $this->view                 = $this->app->view();
         $this->router               = $this->app->router();
         $this->request              = $this->app->request();
         $this->response             = $this->app->response();
-        $this->serializer           = $this->getService('serializer');
-        $this->config               = $this->getService('config');
+        $this->serializer           = $serializer;
+        $this->timer                = $timer;
         
         $this->isJsonResponse       = true;
         $this->errorHandlerTemplate = null;
-        
         $this->errors               = array();
+        $this->globalViewScope      = $globalViewScope;
 
         $this->serializer->setGroups(array('default'));
-    }
-
-    public final function dispatch($action, $argv)
-    {
         $this->app->error(array($this, 'errorHandler'));
-        $this->beforeDispatch();
-        call_user_func_array(array($this, $action), $argv);
-        $this->afterDispatch();
     }
 
-    protected function getService($name)
-    {
-        return ServiceLocator::getInstance()->offsetGet($name);
-    }
-
-    protected function beforeDispatch()
+    public function beforeDispatch()
     {
     }
     
-    protected function afterDispatch()
+    public function afterDispatch()
     {
     }
 
@@ -84,24 +119,26 @@ class Controller
         }
     }
 
-    public function isNotJsonResponse($errorHandlerTemplate)
+    protected function isJsonResponse($switch=null, $errorHandlerTemplate=null)
     {
-        $this->errorHandlerTemplate = $errorHandlerTemplate;
-        $this->isJsonResponse       = false;
+        if (is_bool($switch)) {
+            $this->isJsonResponse = $switch;
+            if ($switch === true) {
+                if (empty($errorHandlerTemplate)) {
+                    throw new \RuntimeException('You should provide an error handler template to switch JSON response off!');
+                }
+                $this->errorHandlerTemplate = $errorHandlerTemplate;
+            }
+        }
+        return $this->isJsonResponse;
     }
 
-    public function isJsonResponse()
+    protected function getRawInput()
     {
-        $this->isJsonResponse = true;
+        return $this->environment['slim.input'];
     }
 
-    public function jsonRequest()
-    {
-        $env = $this->app->environment();
-        return $env['slim.input'];
-    }
-
-    public function jsonResponse($data, $status=0, $message=null)
+    protected function jsonResponse($data, $status=0, $message=null)
     {
         if ($status === 0 && count($this->errors) > 0) {
             $status = -1;
@@ -111,7 +148,7 @@ class Controller
             'status'        => $status,
             'message'       => $message,
             'errors'        => $this->errors,
-            'executionTime' => $this->getService('timer')->stop()  
+            'executionTime' => $this->timer->stop()
         );
         $this->app->contentType('application/json;charset=utf-8');
         $this->response->setBody($this->serializer->serialize($response));
@@ -119,33 +156,20 @@ class Controller
 
     protected function render($template, $scope = array(), $status = null)
     {
+        $scope = array_merge_recursive($this->globalViewScope, $scope);
         if (isset($scope['errors'])) {
             $scope['errors'] = array_merge_recursive($scope['errors'], $this->errors);
         } else {
             $scope['errors'] = $this->errors;
         }
         foreach ($scope['errors'] as &$error) {
-            if ($error['message'] instanceof \Exception) $error['message'] = $error['message']->getMessage();
+            if ($error['message'] instanceof \Exception) {
+                $error['message'] = $error['message']->getMessage();
+                $error['code']    = $error['message']->getCode();
+            }
             unset($error);
         }
-        
-        if (isset($scope['assets'])) {
-            $scope['assets'] = array_merge_recursive($scope['assets'], $this->getService('assets'));
-        } else {
-            $scope['assets'] = $this->getService('assets');
-        }
-
-        $scope = array_merge($scope, array(
-            'URL'             => $this->getService('URL'),
-            'SCRIPT_URL'      => $this->getService('SCRIPT_URL'),
-            'PUBLIC_ASSETS'   => $this->getService('PUBLIC_ASSETS'),
-            'PUBLIC_UPLOADS'  => $this->getService('PUBLIC_UPLOADS')
-        ));
-
-        \Twig\Extensions\Filters::register($this->view->getInstance());
-
         $this->app->contentType('text/html;charset=utf-8');
-
         $this->app->render($template, $scope, $status);
     }
 
