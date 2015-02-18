@@ -1,4 +1,5 @@
 <?php
+use \ArrayAccess;
 use \Timer;
 use \Slim;
 use \Opensoft\SimpleSerializer\Serializer;
@@ -38,6 +39,10 @@ class Controller
      * @var Timer
      */
     protected $timer;
+    /**
+     * @var ArrayAccess
+     */
+    protected $session;
 
     /**
      * @var array
@@ -61,9 +66,10 @@ class Controller
      * @param Slim\Slim     $application
      * @param Serializer    $serializer
      * @param Timer         $timer
+     * @param ArrayAccess   $session
      * @param array         $globalViewScope    Scope to share through all views
      */
-    public function __construct(Slim\Slim $application, Serializer $serializer, Timer $timer, $globalViewScope)
+    public function __construct(Slim\Slim $application, Serializer $serializer, Timer $timer, ArrayAccess $session, $globalViewScope)
     {
         $this->app                  = $application;
         $this->environment          = $this->app->environment();
@@ -73,6 +79,7 @@ class Controller
         $this->response             = $this->app->response();
         $this->serializer           = $serializer;
         $this->timer                = $timer;
+        $this->session              = $session;
         
         $this->isJsonResponse       = true;
         $this->errorHandlerTemplate = null;
