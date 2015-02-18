@@ -1,4 +1,5 @@
 <?php
+use \Pimple\Container as Pimple;
 use \Opensoft\SimpleSerializer as OSS;
 use \Doctrine\ORM as ORM;
 use \Doctrine\DBAL\Types\Type as Type;
@@ -8,7 +9,7 @@ use \Doctrine\StdErrSQLLogger;
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
     
-    $SL = \ServiceLocator::getInstance();
+    $SL = new Pimple();
 
     $SL['URL'] = function () {
         $PATH = dirname($_SERVER['SCRIPT_NAME']);
@@ -23,31 +24,31 @@ return call_user_func(function () {
     $SL['LOCAL_LIB'] = function () {
         return __DIR__;
     };
-    $SL['LOCAL_HOME'] = function ($SL) {
+    $SL['LOCAL_HOME'] = function () use ($SL) {
         return realpath($SL['LOCAL_LIB'] . '/..');
     };
-    $SL['LOCAL_APPS'] = function ($SL) {
+    $SL['LOCAL_APPS'] = function () use ($SL) {
         return realpath($SL['LOCAL_HOME'] . '/apps');
     };
-    $SL['LOCAL_DATA'] = function ($SL) {
+    $SL['LOCAL_DATA'] = function () use ($SL) {
         return realpath($SL['LOCAL_HOME'] . '/data');
     };
-    $SL['LOCAL_HTML'] = function ($SL) {
+    $SL['LOCAL_HTML'] = function () use ($SL) {
         return realpath($SL['LOCAL_HOME'] . '/../public_html');
     };
-    $SL['PUBLIC_HTML'] = function($SL) {
+    $SL['PUBLIC_HTML'] = function () use ($SL) {
         return '';
     };
-    $SL['LOCAL_ASSETS'] = function($SL) {
+    $SL['LOCAL_ASSETS'] = function () use ($SL) {
         return realpath($SL['LOCAL_HTML'] . '/assets');
     };
-    $SL['PUBLIC_ASSETS'] = function ($SL) {
+    $SL['PUBLIC_ASSETS'] = function () use ($SL) {
         return $SL['PUBLIC_HTML'] . '/assets';
     };
-    $SL['LOCAL_UPLOADS'] = function ($SL) {
+    $SL['LOCAL_UPLOADS'] = function () use ($SL) {
         return realpath($SL['LOCAL_HTML'] . '/uploads');
     };
-    $SL['PUBLIC_UPLOADS'] = function ($SL) {
+    $SL['PUBLIC_UPLOADS'] = function () use ($SL) {
         return $SL['PUBLIC_HTML'] . '/uploads';
     };
 
@@ -79,19 +80,14 @@ return call_user_func(function () {
         return str_replace($search, $replace, $string);
     });
 
-    $SL['session'] = function () use ($SL) {
-        session_start();
-        return new \Services\Session();
-    };
-
     $SL['timer'] = new \Timer();
 
-    $SL['config'] = function($SL) {
+    $SL['config'] = function () use ($SL) {
         return new \YamlSource($SL['LOCAL_APPS'] . '/configs/config.yml', $SL['PATHS']);
     };
 
-    $SL['hash'] = function ($SL) {
-        return new \Hash('sha1', $SL['config']['app']['salt']);
+    $SL['setTimezone'] = function () use ($SL) {
+        date_default_timezone_set($SL['config']['app']['timezone']);
     };
 
     $SL['serializer'] = function () use ($SL) {
@@ -105,8 +101,8 @@ return call_user_func(function () {
                     new OSS\Metadata\Driver\YamlDriver(
                         new OSS\Metadata\Driver\FileLocator(
                             array(
-                                'App\\Entities' => $SL['LOCAL_LIB'] . '/App/Entities',
-                                '\\'            => $SL['LOCAL_LIB']
+                                'App\\Model\\Entities' => $SL['LOCAL_LIB'] . '/App/Model/Entities',
+                                '\\'                   => $SL['LOCAL_LIB']
                             )
                         )
                     ),
@@ -119,7 +115,7 @@ return call_user_func(function () {
     };
 
     $SL['entityManager'] = function () use ($SL) {
-        date_default_timezone_set($SL['config']['app']['timezone']);
+        $SL['setTimezone'];
         $eventManager = new \Doctrine\Common\EventManager();
         $eventManager->addEventListener(
             ORM\Events::loadClassMetadata,
@@ -152,19 +148,12 @@ return call_user_func(function () {
         return $em;
     };
 
-    $SL['reconnectToDB'] = $SL->protect(function () use ($SL) {
-        $em = $SL['entityManager'];
-        $em->getConnection()->close();
-        return $em->getConnection()->connect();
-    });
-    
-
     $SL['assets'] = function ($SL) {
         return $SL['config']['app']['assets'];
     };
 
     $SL['app'] = function () use ($SL) {
-        // date_default_timezone_set($SL['config']['app']['timezone']);
+        $SL['setTimezone'];
         $config = $SL['config']['slim'];
         $view = new \Slim\Views\Twig();
         $view->parserOptions = array(
@@ -177,9 +166,11 @@ return call_user_func(function () {
         $config['view']           = $view;
         $config['templates.path'] = $SL['LOCAL_APPS'] . '/templates';
         $app = new \Slim\Slim($config);
-        array_walk($SL['config']['app']['routes'], function($routes, $mapTo) use ($SL, $app) {
-            $SL['routerFactory']($app, $mapTo, $routes);
-        });
+        if (is_array($SL['config']['app']['routes'])) {
+            foreach ($SL['config']['app']['routes'] as $mapTo=>$routes) {
+                $SL['routerFactory']($app, $mapTo, $routes);
+            }
+        }
         return $app;
     };
 
@@ -194,7 +185,9 @@ return call_user_func(function () {
                     $argv = func_get_args();
                     $controller = $SL['controllerFactory']($route['controller']);
                     $action = $route['action'];
-                    $controller->dispatch($action, $argv);
+                    $controller->beforeDispatch();
+                    $controller->$action($argv);
+                    $controller->afterDispatch();
                 };
             }
             if ($callback == null) throw new \RuntimeException('Route callback is invalid!');
@@ -214,8 +207,18 @@ return call_user_func(function () {
         return 'App\\Controllers\\' . ucfirst($name);
     });
     $SL['controllerFactory'] = $SL->protect(function($name) use ($SL) {
-        $className = $SL['getControllerClassName']($name);
-        return new $className;
+        $className       = $SL['getControllerClassName']($name);
+        $application     = $SL['app'];
+        $serializer      = $SL['serializer'];
+        $timer           = $SL['timer'];
+        $globalViewScope = array(
+            'assets'          => $SL['assets'],
+            'URL'             => $SL['URL'],
+            'SCRIPT_URL'      => $SL['SCRIPT_URL'],
+            'PUBLIC_ASSETS'   => $SL['PUBLIC_ASSETS'],
+            'PUBLIC_UPLOADS'  => $SL['PUBLIC_UPLOADS']
+        );
+        return new $className($application, $serializer, $timer, $globalViewScope);
     });
 
     $SL['getEntityClassName'] = $SL->protect(function($name) {
