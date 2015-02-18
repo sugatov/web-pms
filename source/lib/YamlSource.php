@@ -20,7 +20,6 @@ class YamlSource implements \ArrayAccess
                 $this->_paths_replace[] = $replace;
             }
         }
-        $filename = realpath($filename);
         $this->_container = $this->_parseYaml($filename);
         chdir($cwd);
     }
@@ -30,6 +29,7 @@ class YamlSource implements \ArrayAccess
         if ( ! is_file($filename)) {
             throw new \RuntimeException('Could not find a file: "' . $filename . '"');
         }
+        $filename = realpath($filename);
         $data = Yaml::parse(file_get_contents($filename));
         if (is_array($this->_paths)) {
             $this->_fixPaths($data);
@@ -45,7 +45,7 @@ class YamlSource implements \ArrayAccess
         if (isset($node['!imports']) && is_array($node['!imports'])) {
             foreach($node['!imports'] as &$import) {
                 chdir(dirname($filename));
-                $importFilename = realpath($import);
+                $importFilename = $import;
                 $childNode = $this->_parseYaml($importFilename);
                 $node = array_replace_recursive($childNode, $node);
                 unset($import);
