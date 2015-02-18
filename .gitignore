@@ -1,8 +1,8 @@
-/*.sublime-workspace
+*.sublime-workspace
 /source/lib/vendor
 /public_html/assets/bower_components
 /.idea
-/*.sublime-project
+*.sublime-project
 /source/data/cache
 /source/lib/composer.lock
-/source/lib/App/Entities/*.php~
+*.php~
