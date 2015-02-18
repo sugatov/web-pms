@@ -93,7 +93,7 @@ class Articles extends RepositoryBasedService
             $old = $this->repository->find($old);
         }
         if ( ! $old) {
-            throw new \Exception('Не правильный идентификатор предыдущей версии статьи!');
+            throw new \Exception('Неправильный идентификатор предыдущей версии статьи!');
         }
         $new->setUser($user);
         $new->setBasedOn($old);
