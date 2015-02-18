@@ -1,0 +1,11 @@
+!imports:
+    - "./configs/config.yml"
+app:
+    assets:
+        !imports:
+            - "./assets/debug.yml"
+
+    routes:
+        "/dev":
+            !imports:
+                - "./routers/dev.yml"

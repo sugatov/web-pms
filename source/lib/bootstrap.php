@@ -119,7 +119,7 @@ return call_user_func(function () {
     };
 
     $SL['entityManager'] = function () use ($SL) {
-        // date_default_timezone_set($SL['config']['app']['timezone']);
+        date_default_timezone_set($SL['config']['app']['timezone']);
         $eventManager = new \Doctrine\Common\EventManager();
         $eventManager->addEventListener(
             ORM\Events::loadClassMetadata,
@@ -127,13 +127,13 @@ return call_user_func(function () {
         );
 
         $configuration = ORM\Tools\Setup::createAnnotationMetadataConfiguration(
-            array($SL['LOCAL_LIB'] . "/App/Entities"),
+            array($SL['LOCAL_LIB'] . "/App/Model/Entities"),
             $SL['config']['app']['debug']
         );
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
-        $configuration->addEntityNamespace('App', 'App\\Entities');
+        $configuration->addEntityNamespace('App', 'App\\Model\\Entities');
 
         $em = ORM\EntityManager::create(
             $SL['config']['app']['database']['config'],
@@ -228,6 +228,18 @@ return call_user_func(function () {
 
     $SL['url'] = function() use ($SL) {
         return new \SlimURL($SL['app']);
+    };
+
+    $SL['diff'] = function() {
+        return new \Diff;
+    };
+
+    $SL['users'] = function() use ($SL) {
+        return new \App\Services\Users($SL['entityManager']);
+    };
+
+    $SL['articles'] = function() use ($SL) {
+        return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
     };
 
     return $SL;
