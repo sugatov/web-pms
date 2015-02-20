@@ -1,0 +1,7 @@
+articles-show:
+    active: true
+    pattern: "/:name"
+    methods:
+        - "GET"
+    controller: "Articles"
+    action: "show"

@@ -9,3 +9,6 @@ app:
         "/dev":
             !imports:
                 - "./routers/dev.yml"
+        "":
+            !imports:
+                - "./routers/articles.yml"

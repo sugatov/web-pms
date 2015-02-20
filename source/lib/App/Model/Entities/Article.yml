@@ -1,0 +1,14 @@
+App\Model\Entities\Article:
+    properties:
+        name:
+            expose: true
+            type: string
+            groups: ['default']
+        content:
+            expose: true
+            type: string
+            groups: ['default']
+        date:
+            expose: true
+            type: DateTime
+            groups: ['default']
