@@ -1,0 +1,7 @@
+{% extends 'index.twig' %}
+
+{% block title %}{{ article.getName }}{% endblock %}
+
+{% block body %}
+    {{ article.getContent|raw }}
+{% endblock %}

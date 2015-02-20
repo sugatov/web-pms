@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-use \Controller;
+use App\Controller;
 
 class Dev extends Controller
 {

@@ -82,6 +82,14 @@ return call_user_func(function () {
 
     $SL['timer'] = new \Timer();
 
+    $SL['session'] = function () {
+        return new NativeSession();
+    };
+
+    $SL['cache'] = function () use ($SL) {
+        return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
+    };
+
     $SL['config'] = function () use ($SL) {
         return new \YamlSource($SL['LOCAL_APPS'] . '/configs/config.yml', $SL['PATHS']);
     };
@@ -93,7 +101,7 @@ return call_user_func(function () {
     $SL['serializer'] = function () use ($SL) {
         $cacheDriver = null;
         if ( ! $SL['config']['app']['debug']) {
-            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serialization');
+            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
         }
         return new OSS\Serializer(
             new OSS\Adapter\MyArrayAdapter(
@@ -101,8 +109,9 @@ return call_user_func(function () {
                     new OSS\Metadata\Driver\YamlDriver(
                         new OSS\Metadata\Driver\FileLocator(
                             array(
-                                'App\\Model\\Entities' => $SL['LOCAL_LIB'] . '/App/Model/Entities',
-                                '\\'                   => $SL['LOCAL_LIB']
+                                'App\\Model\\Entities'        => $SL['LOCAL_LIB'] . '/App/Model/Entities',
+                                'App\\Model\\Entities\\Super' => $SL['LOCAL_LIB'] . '/App/Model/Entities/Super',
+                                '\\'                          => $SL['LOCAL_LIB']
                             )
                         )
                     ),
@@ -161,7 +170,8 @@ return call_user_func(function () {
             'cache' => $SL['LOCAL_DATA'] . '/cache/templates'
         );
         $view->parserExtensions = array(
-            new \Slim\Views\TwigExtension()
+            new \Slim\Views\TwigExtension(),
+            new \App\Twig\Extensions\EntityTests()
         );
         $config['view']           = $view;
         $config['templates.path'] = $SL['LOCAL_APPS'] . '/templates';
@@ -172,6 +182,16 @@ return call_user_func(function () {
             }
         }
         return $app;
+    };
+
+    $SL['globalViewScope'] = function () use ($SL) {
+        return array(
+            'assets'          => $SL['assets'],
+            'URL'             => $SL['URL'],
+            'SCRIPT_URL'      => $SL['SCRIPT_URL'],
+            'PUBLIC_ASSETS'   => $SL['PUBLIC_ASSETS'],
+            'PUBLIC_UPLOADS'  => $SL['PUBLIC_UPLOADS']
+        );
     };
 
     $SL['routerFactory'] = $SL->protect(function(\Slim\Slim $slim, $mapTo, $routes) use ($SL) {
@@ -186,7 +206,7 @@ return call_user_func(function () {
                     $controller = $SL['controllerFactory']($route['controller']);
                     $action = $route['action'];
                     $controller->beforeDispatch();
-                    $controller->$action($argv);
+                    call_user_func_array(array($controller, $action), $argv);
                     $controller->afterDispatch();
                 };
             }
@@ -203,26 +223,31 @@ return call_user_func(function () {
         });
     });
 
-    $SL['getControllerClassName'] = $SL->protect(function($name) {
-        return 'App\\Controllers\\' . ucfirst($name);
-    });
     $SL['controllerFactory'] = $SL->protect(function($name) use ($SL) {
-        $className       = $SL['getControllerClassName']($name);
-        $application     = $SL['app'];
-        $serializer      = $SL['serializer'];
-        $timer           = $SL['timer'];
-        $globalViewScope = array(
-            'assets'          => $SL['assets'],
-            'URL'             => $SL['URL'],
-            'SCRIPT_URL'      => $SL['SCRIPT_URL'],
-            'PUBLIC_ASSETS'   => $SL['PUBLIC_ASSETS'],
-            'PUBLIC_UPLOADS'  => $SL['PUBLIC_UPLOADS']
-        );
-        return new $className($application, $serializer, $timer, $globalViewScope);
-    });
-
-    $SL['getEntityClassName'] = $SL->protect(function($name) {
-        return 'App\\Entities\\' . ucfirst($name);
+        $containerKey = 'controllers.' . $name;
+        if (isset($SL[$containerKey])) {
+            return $SL[$containerKey];
+        }
+        $className = 'App\\Controllers\\' . $name;
+        if (is_subclass_of($className, 'App\\Controller')) {
+            $application     = $SL['app'];
+            $serializer      = $SL['serializer'];
+            $session         = $SL['session'];
+            $globalViewScope = $SL['globalViewScope'];
+            $cache           = $SL['cache'];
+            $markdown        = $SL['markdownParser'];
+            $users           = $SL['users'];
+            $articles        = $SL['articles'];
+            return new $className($application,
+                                  $serializer,
+                                  $session,
+                                  $globalViewScope,
+                                  $cache,
+                                  $markdown,
+                                  $users,
+                                  $articles);
+        }
+        throw new \RuntimeException('Have no way to create a controller of this type!');
     });
 
     $SL['markdownParser'] = function($SL) {
@@ -244,6 +269,7 @@ return call_user_func(function () {
     $SL['articles'] = function() use ($SL) {
         return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
     };
+
 
     return $SL;
 });
