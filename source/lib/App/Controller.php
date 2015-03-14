@@ -1,67 +1,40 @@
 <?php
 namespace App;
 
-use ArrayAccess;
-use Slim;
-use Opensoft\SimpleSerializer\Serializer;
-use CacheInterface;
-use MarkdownParser;
-use StorageInterface;
-use App\Services;
-
 class Controller extends \Controller
 {
     /**
-     * @var CacheInterface
+     * @var ControllerServiceProviderInterface
      */
-    protected $cache;
+    protected $serviceProvider;
 
-    /**
-     * @var MarkdownParser
-     */
-    protected $markdown;
-
-    /**
-     * @var Services\Users
-     */
-    protected $users;
-
-    /**
-     * @var Services\Articles
-     */
-    protected $articles;
-
-    /**
-     * @var StorageInterface
-     */
-    protected $storage;
-
-    /**
-     * @param Slim\Slim          $application
-     * @param Serializer         $serializer
-     * @param ArrayAccess        $session
-     * @param array              $globalViewScope    Scope to share through all views
-     * @param CacheInterface     $cache
-     * @param MarkdownParser     $markdown
-     * @param Services\Users     $users
-     * @param Services\Articles  $articles
-     */
-    public function __construct(Slim\Slim $application,
-                                Serializer $serializer,
-                                ArrayAccess $session,
-                                $globalViewScope,
-                                CacheInterface $cache,
-                                StorageInterface $storage,
-                                MarkdownParser $markdown,
-                                Services\Users $users,
-                                Services\Articles $articles)
+    protected function cache()
     {
-        parent::__construct($application, $serializer, $session, $globalViewScope);
+        return $this->serviceProvider->getCache();
+    }
 
-        $this->cache    = $cache;
-        $this->storage  = $storage;
-        $this->markdown = $markdown;
-        $this->users    = $users;
-        $this->articles = $articles;
+    protected function storage()
+    {
+        return $this->serviceProvider->getStorage();
+    }
+
+    protected function markdownParser()
+    {
+        return $this->serviceProvider->getMarkdownParser();
+    }
+
+    protected function users()
+    {
+        return $this->serviceProvider->getUsers();
+    }
+
+    protected function articles()
+    {
+        return $this->serviceProvider->getArticles();
+    }
+
+    protected function uploads()
+    {
+        return $this->serviceProvider->getUploads();
     }
 }

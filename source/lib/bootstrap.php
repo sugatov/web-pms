@@ -237,24 +237,9 @@ return call_user_func(function () {
         }
         $className = 'App\\Controllers\\' . $name;
         if (is_subclass_of($className, 'App\\Controller')) {
-            $application     = $SL['app'];
-            $serializer      = $SL['serializer'];
-            $session         = $SL['session'];
-            $globalViewScope = $SL['globalViewScope'];
-            $cache           = $SL['cache'];
-            $storage         = $SL['storage'];
-            $markdown        = $SL['markdownParser'];
-            $users           = $SL['users'];
-            $articles        = $SL['articles'];
-            return new $className($application,
-                                  $serializer,
-                                  $session,
-                                  $globalViewScope,
-                                  $cache,
-                                  $storage,
-                                  $markdown,
-                                  $users,
-                                  $articles);
+            return new $className($SL['app'],
+                                  $SL['globalViewScope'],
+                                  new \App\ControllerServiceProvider($SL));
         }
         throw new \RuntimeException('Have no way to create a controller of this type!');
     });
@@ -278,36 +263,16 @@ return call_user_func(function () {
     };
 
     $SL['users'] = function() use ($SL) {
-        $initializer = function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer) use ($SL) {
-            $initializer   = null;
-            $wrappedObject = new \App\Services\Users($SL['entityManager']);
-            return true;
-        };
-        return $SL['proxyFactory']->createProxy('\App\Services\Users', $initializer);
+        return new \App\Services\Users($SL['entityManager']);
     };
 
 
     $SL['articles'] = function() use ($SL) {
-        $initializer = function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer) use ($SL) {
-            $initializer   = null;
-            $wrappedObject = new \App\Services\Articles($SL['entityManager'], $SL['diff']);
-            return true;
-        };
-        return $SL['proxyFactory']->createProxy('\App\Services\Articles', $initializer);
+        return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
     };
 
     $SL['uploads'] = function() use ($SL) {
         return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
-    };
-
-    $SL['controllers.Uploads'] = function() use ($SL) {
-        return new \App\Controllers\Uploads(
-            $SL['app'],
-            $SL['serializer'],
-            $SL['session'],
-            $SL['globalViewScope'],
-            $SL['uploads']
-        );
     };
 
     $SL['controllers.Cache'] = function() use ($SL) {

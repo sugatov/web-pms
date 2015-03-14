@@ -17,6 +17,6 @@ class Dev extends Controller
 
     public function env()
     {
-        print_r($this->environment);
+        print_r($this->environment());
     }
 }

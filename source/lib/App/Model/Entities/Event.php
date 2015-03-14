@@ -5,6 +5,7 @@ use \App\Model\Exceptions\ValidationException;
 
 /**
  * @Entity
+ * @HasLifecycleCallbacks
  */
 class Event extends Article
 {
@@ -12,6 +13,18 @@ class Event extends Article
      * @Column(type="date", nullable=false)
      */
     private $eventDate;
+
+    /**
+     * @PrePersist
+     * @PreUpdate
+     */
+    public function _prePersist()
+    {
+        parent::_prePersist();
+        if (empty($this->eventDate)) {
+            throw new ValidationException('Неверный формат даты!');
+        }
+    }
 
 
     /**
@@ -23,10 +36,6 @@ class Event extends Article
      */
     public function setEventDate($eventDate)
     {
-        if (empty($eventDate) || ! $eventDate instanceof \DateTime) {
-            throw new ValidationException('Неверный формат даты!');
-        }
-
         $this->eventDate = $eventDate;
 
         return $this;

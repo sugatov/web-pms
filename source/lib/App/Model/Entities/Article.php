@@ -5,6 +5,7 @@ use \App\Model\Exceptions\ValidationException;
 
 /**
  * @Entity(repositoryClass="\App\Model\Repositories\Articles")
+ * @HasLifecycleCallbacks
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string", length=16)
  * @DiscriminatorMap({"Article" = "Article", "Location" = "Location", "Event" = "Event"})
@@ -56,12 +57,14 @@ class Article extends Super\IntegerID
      */
     private $user;
 
-
-    public function __construct()
+    /**
+     * @PrePersist
+     * @PreUpdate
+     */
+    public function _prePersist()
     {
         $this->setDate(new \DateTime());
     }
-    
 
     /**
      * Set content
