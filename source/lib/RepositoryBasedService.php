@@ -29,4 +29,12 @@ class RepositoryBasedService extends Service
     {
         return call_user_func_array(array($this->repository, $method), $argv);
     }
+
+    /**
+     * @return ObjectRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }
 }

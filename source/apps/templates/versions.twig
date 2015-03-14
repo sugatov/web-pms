@@ -1,0 +1,59 @@
+{% extends 'template.twig' %}
+
+{% block title %}
+    Версии статьи "{{name}}"
+{% endblock %}
+
+{% block body %}
+    <div class="ui segment">
+        <h2 class="ui header">
+            Версии статьи "{{name}}"
+        </h2>
+        <table class="ui small celled table">
+            <thead>
+                <tr>
+                    <th>
+                        ID версии
+                    </th>
+                    <th>
+                        Имя статьи
+                    </th>
+                    <th>
+                        ID предыдущей версии
+                    </th>
+                    <th>
+                        Имя предыдущей версии
+                    </th>
+                    <th>
+                        Действия
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in list %}
+                    <tr>
+                        {% set id = item.getId %}
+                        {% set prevId = item.getBasedOn.getId %}
+                        <td><a target="_blank" href="{{urlFor('articles-version', {id: id})}}">{{id}}</a></td>
+                        <td>{{item.getName}}</td>
+                        <td><a target="_blank" href="{{urlFor('articles-version', {id: prevId})}}">{{prevId}}</a></td>
+                        <td>{{item.getBasedOn.getName}}</td>
+                        <td>
+                            <div class="ui compact menu">
+                                <div class="ui simple dropdown item">
+                                    <i class="dropdown icon"></i>
+                                    Действия
+                                    <div class="menu">
+                                        {% if item.getBasedOn is Article %}
+                                            <a class="item" href="{{urlFor('articles-diff', {new: id, original: prevId})}}">Сравнить</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

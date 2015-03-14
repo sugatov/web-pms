@@ -1,0 +1,10 @@
+App\Model\Entities\UploadImage:
+    properties:
+        width:
+            expose: true
+            type: integer
+            groups: ['default']
+        height:
+            expose: true
+            type: integer
+            groups: ['default']

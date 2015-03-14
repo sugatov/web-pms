@@ -11,6 +11,24 @@ use \App\Model\Exceptions\ValidationException;
  */
 class Article extends Super\IntegerID
 {
+    private $_type = null;
+    public function getType()
+    {
+        if ($this->_type == null) {
+            $type = explode('\\', get_class($this));
+            $this->_type = end($type);
+        }
+        return $this->_type;
+    }
+    public function setType($type)
+    {
+        if (in_array($type, array('Article', 'Location', 'Event'))) {
+            $this->_type = $type;
+        } else {
+            throw new ValidationException('Неверный тип статьи!');
+        }
+    }
+
     /**
      * @Column(type="string", unique=false, nullable=false)
      */

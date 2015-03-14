@@ -6,6 +6,7 @@ use Slim;
 use Opensoft\SimpleSerializer\Serializer;
 use CacheInterface;
 use MarkdownParser;
+use StorageInterface;
 use App\Services;
 
 class Controller extends \Controller
@@ -31,6 +32,11 @@ class Controller extends \Controller
     protected $articles;
 
     /**
+     * @var StorageInterface
+     */
+    protected $storage;
+
+    /**
      * @param Slim\Slim          $application
      * @param Serializer         $serializer
      * @param ArrayAccess        $session
@@ -45,6 +51,7 @@ class Controller extends \Controller
                                 ArrayAccess $session,
                                 $globalViewScope,
                                 CacheInterface $cache,
+                                StorageInterface $storage,
                                 MarkdownParser $markdown,
                                 Services\Users $users,
                                 Services\Articles $articles)
@@ -52,6 +59,7 @@ class Controller extends \Controller
         parent::__construct($application, $serializer, $session, $globalViewScope);
 
         $this->cache    = $cache;
+        $this->storage  = $storage;
         $this->markdown = $markdown;
         $this->users    = $users;
         $this->articles = $articles;

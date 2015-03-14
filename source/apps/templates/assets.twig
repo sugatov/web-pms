@@ -1,0 +1,14 @@
+{% block assets %}
+    {% for css in assets.css %}
+        <link rel="stylesheet" type="text/css" href="{{css}}">
+    {% endfor %}
+    {% for less in assets.less %}
+        <link rel="stylesheet/less" type="text/css" href="{{less}}">
+    {% endfor %}
+    {% for js in assets.js %}
+        <script type="text/javascript" src="{{js}}"></script>
+    {% endfor %}
+    {% for js in assets.jsdefer %}
+        <script type="text/javascript" src="{{js}}" defer></script>
+    {% endfor %}
+{% endblock %}

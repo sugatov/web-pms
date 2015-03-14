@@ -1,0 +1,26 @@
+{% extends 'template.twig' %}
+
+{% block title %}
+    Версии статьи "{{name}}"
+{% endblock %}
+
+{% block assets %}
+    {{parent()}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/googlecode.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="ui segment">
+        <h2 class="ui header">
+            Сравнить статьи {{original.getId}} и {{new.getId}}
+        </h2>
+
+        <div class="ui segment">
+            <pre style="white-space: pre-wrap;"><code class="diff hljs">{{difference}}</code>
+            </pre>
+        </div>
+        
+    </div>
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+{% endblock %}

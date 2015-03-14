@@ -67,4 +67,39 @@ class Articles extends EntityRepository
         return $this->createQueryBuilder($alias)
                     ->where($alias . ' INSTANCE OF App:Location');
     }
+
+    /**
+     * Create Article list query
+     * @param  string $alias
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function createListQuery($alias)
+    {
+        return $this->createQueryBuilder($alias)
+                    ->groupBy($alias . '.name')
+                    ->getQuery();
+    }
+
+    /**
+     * @return \Doctrine\ORM\Query
+     */
+    public function getLatestUpdatesQuery()
+    {
+        $dql = "SELECT art FROM App:Article art
+                WHERE art.id IN
+                    (SELECT MAX(sub.id) FROM App:Article sub GROUP BY sub.name)
+                ORDER BY art.id DESC";
+        return $this->getEntityManager()->createQuery($dql);
+    }
+
+    /**
+     * Create a QueryBuilder which contains nonrecurring Articles
+     * @param  string $alias
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function createNonrecurringQueryBuilder($alias)
+    {
+        return $this->createQueryBuilder($alias)
+                    ->groupBy($alias . '.name');
+    }
 }

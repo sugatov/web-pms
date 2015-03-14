@@ -1,10 +1,12 @@
 <?php
-use \Pimple\Container as Pimple;
-use \Opensoft\SimpleSerializer as OSS;
-use \Doctrine\ORM as ORM;
-use \Doctrine\DBAL\Types\Type as Type;
-use \Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
-use \Doctrine\StdErrSQLLogger;
+use Pimple\Container as Pimple;
+use Opensoft\SimpleSerializer as OSS;
+use Doctrine\ORM as ORM;
+use Doctrine\DBAL\Types\Type as Type;
+use Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
+use Doctrine\StdErrSQLLogger;
+use ProxyManager\Factory\LazyLoadingValueHolderFactory;
+use ProxyManager\Proxy\LazyLoadingInterface;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
@@ -90,6 +92,10 @@ return call_user_func(function () {
         return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
     };
 
+    $SL['storage'] = function () use ($SL) {
+        return new \FileStorage($SL['LOCAL_DATA'] . '/filestorage');
+    };
+
     $SL['config'] = function () use ($SL) {
         return new \YamlSource($SL['LOCAL_APPS'] . '/configs/config.yml', $SL['PATHS']);
     };
@@ -157,7 +163,7 @@ return call_user_func(function () {
         return $em;
     };
 
-    $SL['assets'] = function ($SL) {
+    $SL['assets'] = function () use ($SL) {
         return $SL['config']['app']['assets'];
     };
 
@@ -171,7 +177,8 @@ return call_user_func(function () {
         );
         $view->parserExtensions = array(
             new \Slim\Views\TwigExtension(),
-            new \App\Twig\Extensions\EntityTests()
+            new \App\Twig\Extensions\EntityTests(),
+            new \Twig\Extensions\Filters()
         );
         $config['view']           = $view;
         $config['templates.path'] = $SL['LOCAL_APPS'] . '/templates';
@@ -235,6 +242,7 @@ return call_user_func(function () {
             $session         = $SL['session'];
             $globalViewScope = $SL['globalViewScope'];
             $cache           = $SL['cache'];
+            $storage         = $SL['storage'];
             $markdown        = $SL['markdownParser'];
             $users           = $SL['users'];
             $articles        = $SL['articles'];
@@ -243,6 +251,7 @@ return call_user_func(function () {
                                   $session,
                                   $globalViewScope,
                                   $cache,
+                                  $storage,
                                   $markdown,
                                   $users,
                                   $articles);
@@ -251,7 +260,9 @@ return call_user_func(function () {
     });
 
     $SL['markdownParser'] = function($SL) {
-        return new \MarkdownParser();
+        return new \MarkdownParser($SL['url'],
+                                   $SL['uploads'],
+                                   $SL['PUBLIC_UPLOADS']);
     };
 
     $SL['url'] = function() use ($SL) {
@@ -261,13 +272,52 @@ return call_user_func(function () {
     $SL['diff'] = function() {
         return new \Diff;
     };
-
-    $SL['users'] = function() use ($SL) {
-        return new \App\Services\Users($SL['entityManager']);
+    
+    $SL['proxyFactory'] = function () {
+        return new LazyLoadingValueHolderFactory();
     };
 
+    $SL['users'] = function() use ($SL) {
+        $initializer = function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer) use ($SL) {
+            $initializer   = null;
+            $wrappedObject = new \App\Services\Users($SL['entityManager']);
+            return true;
+        };
+        return $SL['proxyFactory']->createProxy('\App\Services\Users', $initializer);
+    };
+
+
     $SL['articles'] = function() use ($SL) {
-        return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
+        $initializer = function (&$wrappedObject, LazyLoadingInterface $proxy, $method, array $parameters, &$initializer) use ($SL) {
+            $initializer   = null;
+            $wrappedObject = new \App\Services\Articles($SL['entityManager'], $SL['diff']);
+            return true;
+        };
+        return $SL['proxyFactory']->createProxy('\App\Services\Articles', $initializer);
+    };
+
+    $SL['uploads'] = function() use ($SL) {
+        return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
+    };
+
+    $SL['controllers.Uploads'] = function() use ($SL) {
+        return new \App\Controllers\Uploads(
+            $SL['app'],
+            $SL['serializer'],
+            $SL['session'],
+            $SL['globalViewScope'],
+            $SL['uploads']
+        );
+    };
+
+    $SL['controllers.Cache'] = function() use ($SL) {
+        return new \App\Controllers\Cache(
+            $SL['app'],
+            $SL['serializer'],
+            $SL['session'],
+            $SL['globalViewScope'],
+            $SL
+        );
     };
 
 

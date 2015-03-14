@@ -1,65 +1,78 @@
 <?php
-use cebe\markdown\MarkdownExtra;
-use Doctrine\ORM\EntityRepository;
+use App\Services\Uploads;
 
-class MarkdownParser extends MarkdownExtra
+class MarkdownParser extends ParsedownExtra
 {
-    use cebe\markdown\inline\custom\LinkTrait;
-
-    protected $articles, $uploads;
-
-    public function __construct(EntityRepository $articles = null, EntityRepository $uploads = null)
-    {
-        $this->articles  = $articles;
-        $this->uploads   = $uploads;
-        $this->html5     = true;
-    }
-
+    protected $_url;
+    protected $_uploads;
+    protected $_PUBLIC_UPLOADS;
 
     /**
-     * @marker %#
+     * @param URLInterface $url
+     * @param Uploads      $uploads
+     * @parem string       $PUBLIC_UPLOADS
      */
-    protected function parseArticle($markdown)
+    public function __construct(URLInterface $url, Uploads $uploads, $PUBLIC_UPLOADS)
     {
-        if (preg_match('/^%#(.+)%/', $markdown, $matches)) {
-            return [
-                [
-                    'article',
-                    'id' => $matches[1]
-                ],
-                strlen($matches[0])
-            ];
+        $this->_url            = $url;
+        $this->_uploads        = $uploads;
+        $this->_PUBLIC_UPLOADS = $PUBLIC_UPLOADS;
+        parent::__construct();
+        $this->setMarkupEscaped(true);
+    }
+
+    public function parse($source)
+    {
+        return $this->text($source);
+    }
+
+    protected function inlineLink($Excerpt)
+    {
+        $element = array('name' => 'a',
+                         'handler' => 'line',
+                         'text' => null,
+                         'attributes' => array('href' => null,
+                                               'title' => null));
+        $extent = 0;
+        $text = $Excerpt['text'];
+        $regexp = <<<REGEXP
+        /\[((?:[^][]|(?R))*)\]/
+REGEXP;
+        if (preg_match($regexp, $text, $matches)) {
+            $element['text'] = $matches[1];
+            $extent += strlen($matches[0]);
+            $text = substr($text, $extent);
+            $regexp = <<<REGEXP
+            /\(=[fFфФ]([\d]+)([\h]+"([\d\w\h]*)")?\)/u
+REGEXP;
+            if (preg_match($regexp, $text, $matches)) {
+                $upload = $this->_uploads->find($matches[1]);
+                $title  = '404';
+                $url    = $this->_PUBLIC_UPLOADS . '/404notfound.png';
+                if ($upload) {
+                    $title = (isset($matches[3])) ? $matches[3] : null;
+                    $url   = $this->_PUBLIC_UPLOADS . '/' . $upload->getFilename();
+                }
+                $element['attributes']['href']  = $url;
+                $element['attributes']['title'] = $title;
+                $extent += strlen($matches[0]);
+                return array('extent' => $extent,
+                             'element' => $element);
+            } else {
+                $regexp = <<<REGEXP
+                /\(=([\d\w\h]+)([\h]+"([\d\w\h]*)")?\)/u
+REGEXP;
+                if (preg_match($regexp, $text, $matches)) {
+                    $url = $this->_url->getUrl('articles-show', array('name'=>$matches[1]));
+                    $title = (isset($matches[3])) ? $matches[3] : null;
+                    $element['attributes']['href']  = $url;
+                    $element['attributes']['title'] = $title;
+                    $extent += strlen($matches[0]);
+                    return array('extent' => $extent,
+                                 'element' => $element);
+                }
+            }
         }
-        return [['text', '%#'], 2];
-    }
-
-    // only URL
-    protected function renderArticle($element)
-    {
-        return '/#' . $element['id'];
-    }
-
-
-    /**
-     * @marker %^
-     */
-    protected function parseUpload($markdown)
-    {
-        if (preg_match('/^%\^(.+)%/', $markdown, $matches)) {
-            return [
-                [
-                    'upload',
-                    'id' => $matches[1]
-                ],
-                strlen($matches[0])
-            ];
-        }
-        return [['text', '%^'], 2];
-    }
-
-    // only URL
-    protected function renderUpload($element)
-    {
-        return '/uploads/' . $element['id'];
+        return parent::inlineLink($Excerpt);
     }
 }

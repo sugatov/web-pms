@@ -1,0 +1,10 @@
+{% extends 'template.twig' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block body %}
+    <div class="ui segment">
+        <h1>{{title}}</h1>
+        {% include 'articles-list.twig' with {list: list} only %}
+    </div>
+{% endblock %}

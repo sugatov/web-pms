@@ -123,7 +123,7 @@ class Controller
     {
         if (is_bool($switch)) {
             $this->isJsonResponse = $switch;
-            if ($switch === true) {
+            if ($switch === false) {
                 if (empty($errorHandlerTemplate)) {
                     throw new \RuntimeException('You should provide an error handler template to switch JSON response off!');
                 }

@@ -1,0 +1,18 @@
+App\Model\Entities\Upload:
+    properties:
+        filename:
+            expose: true
+            type: string
+            groups: ['default']
+        originalFilename:
+            expose: true
+            type: string
+            groups: ['default']
+        mimeType:
+            expose: true
+            type: string
+            groups: ['default']
+        tag:
+            expose: true
+            type: string
+            groups: ['default']

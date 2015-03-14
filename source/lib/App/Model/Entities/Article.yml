@@ -1,5 +1,9 @@
 App\Model\Entities\Article:
     properties:
+        type:
+            expose: true
+            type: string
+            groups: ['default']
         name:
             expose: true
             type: string

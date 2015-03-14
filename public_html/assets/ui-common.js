@@ -1,4 +1,5 @@
 jQuery(document).ready(function(){
+    jQuery('.ui.sticky').sticky();
     jQuery('.ui.dropdown').dropdown();
     jQuery('.ui.checkbox').each(function(index, checkbox){
         var domEl = jQuery(checkbox);

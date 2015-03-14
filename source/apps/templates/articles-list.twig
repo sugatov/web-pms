@@ -1,0 +1,7 @@
+<ul>
+    {% for item in list %}
+        <a href="{{ urlFor('articles-show', {name:item.getName}) }}">
+            <li>{{item.getName()}}</li>
+        </a>
+    {% endfor %}
+</ul>

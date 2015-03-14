@@ -1,0 +1,67 @@
+{% block menu %}
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            var searchForm = document.getElementById('menu-search-form');
+            var searchSubmitButton = document.getElementById('menu-search-submit');
+            searchSubmitButton.addEventListener('click', function() {
+                if (searchForm.checkValidity !== undefined && !searchForm.checkValidity()) {
+                    return false;
+                }
+                searchForm.submit();
+                return true;
+            });
+        });
+    </script>
+
+    <style type="text/css">
+         #top-menu + *{
+            margin-top: 3em;
+        } 
+    </style>
+
+    <div id="top-menu" class="ui fixed inverted menu">
+        <div class="link item" href="#" onclick="window.history.back()">
+            <i class="arrow left icon"></i>
+        </div>
+        <a class="item" href="/">
+            <i class="home icon"></i>
+        </a>
+        {% block menuitems %}
+            <div class="ui dropdown item">
+                <i class="flag icon"></i>
+                Категории
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" href="{{urlFor('articles-all')}}">
+                        <i class="asterisk icon"></i>
+                            Все
+                    </a>
+                    <a class="item" href="{{urlFor('articles-events')}}">
+                        События
+                    </a>
+                    <a class="item" href="{{urlFor('articles-locations')}}">
+                        Локации
+                    </a>
+                </div>
+            </div>
+            <a class="item" rel="nofollow" href="{{urlFor('articles-create')}}">
+                <i class="write icon"></i>
+                Написать статью
+            </a>
+        {% endblock %}
+        <div class="right menu">
+            <a class="item" href="{{urlFor('help-index')}}">
+                <i class="help icon"></i>
+                Помощь
+            </a>
+            <div class="item">
+                <div class="ui icon input">
+                    <form method="post" action="{{urlFor('articles-search')}}" id="menu-search-form">
+                        <input placeholder="Поиск..." type="text" name="name" required>
+                    </form>
+                    <i class="search link icon" id="menu-search-submit"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

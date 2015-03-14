@@ -1,0 +1,16 @@
+<div class="ui circular labels">
+    {% if pages > 0 %}
+        {% for p in 1..pages %}
+            {% set params = {'page': p} %}
+            {% if urlParams %}
+                {% set params = params|merge(urlParams) %}
+            {% endif %}
+            {% set url = urlFor(urlId, params) %}
+            {% if page == p %}
+                <a class="ui blue label">{{ p }}</a>
+            {% else %}
+                <a class="ui label" href="{{ url }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>

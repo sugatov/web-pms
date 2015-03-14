@@ -8,6 +8,7 @@ use \App\Model\Entities\Article;
 use \App\Model\Entities\Event;
 use \App\Model\Entities\Location;
 use \App\Model\Entities\User;
+use \App\Model\Repositories\Articles as ArticlesRepository;
 
 
 class Articles extends RepositoryBasedService
@@ -31,6 +32,14 @@ class Articles extends RepositoryBasedService
 
         $this->compareTool = $compareTool;
     }
+
+    /**
+     * @return ArticlesRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }    
 
     /**
      * Create an instance of Article
@@ -89,10 +98,11 @@ class Articles extends RepositoryBasedService
      */
     public function modify(Article $new, $old, User $user)
     {
-        if ( ! $old instanceof Article && is_int($old)) {
+        if ( ! $old instanceof Article) {
+            $old = (int) $old;
             $old = $this->repository->find($old);
         }
-        if ( ! $old) {
+        if ($old == null) {
             throw new \Exception('Неправильный идентификатор предыдущей версии статьи!');
         }
         $new->setUser($user);

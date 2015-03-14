@@ -1,7 +1,20 @@
-{% extends 'index.twig' %}
+{% extends 'template.twig' %}
 
 {% block title %}{{ article.getName }}{% endblock %}
 
+{% block menuitems %}
+    <a class="item" rel="nofollow" href="{{urlFor('articles-edit', {id: article.getId})}}">
+        <i class="edit icon"></i>
+        Редактировать
+    </a>
+    <a class="item" rel="nofollow" href="{{urlFor('articles-versions', {name: article.getName})}}">
+        <i class="history icon"></i>
+        Версии статьи
+    </a>
+{% endblock %}
+
 {% block body %}
-    {{ article.getContent|raw }}
+    <div class="ui segment">
+        {{ article.getContent|raw }}
+    </div>
 {% endblock %}

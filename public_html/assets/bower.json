@@ -13,6 +13,7 @@
     "knockoutjs": "latest",
     "knockout-mapping": "latest",
     "jquery": ">= 1.9 < 2.0",
+    "jquery.ui": "latest",
     "less.js": ">= 2.0 < 2.2",
     "json2": "latest"
   }
