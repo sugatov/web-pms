@@ -72,7 +72,19 @@ articles-events:
     action: "events"
 articles-events-by-date:
     active: true
-    pattern: "/events-by-date(/:year(/:month(/:day)))"
+    pattern: "/events-by-date/:year(/:month(/:day))"
     methods: ["GET"]
     controller: "Articles"
     action: "eventsByDate"
+articles-events-by-century:
+    active: true
+    pattern: "/events-by-century/:century"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "eventsByCentury"
+articles-events-by-decade:
+    active: true
+    pattern: "/events-by-decade/:century/:decade"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "eventsByDecade"

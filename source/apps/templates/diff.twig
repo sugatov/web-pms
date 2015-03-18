@@ -4,12 +4,6 @@
     Версии статьи "{{name}}"
 {% endblock %}
 
-{% block assets %}
-    {{parent()}}
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/googlecode.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
-{% endblock %}
-
 {% block body %}
     <div class="ui segment">
         <h2 class="ui header">
@@ -22,5 +16,9 @@
         </div>
         
     </div>
-    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            hljs.initHighlightingOnLoad();
+        });
+    </script>
 {% endblock %}

@@ -16,10 +16,16 @@
                         ID версии
                     </th>
                     <th>
+                        Дата
+                    </th>
+                    <th>
                         Имя статьи
                     </th>
                     <th>
                         ID предыдущей версии
+                    </th>
+                    <th>
+                        Дата
                     </th>
                     <th>
                         Имя предыдущей версии
@@ -33,18 +39,39 @@
                 {% for item in list %}
                     <tr>
                         {% set id = item.getId %}
+                        {% set prev = item.getBasedOn %}
                         {% set prevId = item.getBasedOn.getId %}
                         <td><a target="_blank" href="{{urlFor('articles-version', {id: id})}}">{{id}}</a></td>
+                        <td>{{item.getDate|date('d.m.Y')}}</td>
                         <td>{{item.getName}}</td>
-                        <td><a target="_blank" href="{{urlFor('articles-version', {id: prevId})}}">{{prevId}}</a></td>
-                        <td>{{item.getBasedOn.getName}}</td>
+                        <td>
+                            {% if prev %}
+                                <a target="_blank" href="{{urlFor('articles-version', {id: prevId})}}">{{prevId}}</a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if prev %}
+                                {{prev.getDate|date('d.m.Y')}}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if prev %}
+                                {{prev.getName}}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
                         <td>
                             <div class="ui compact menu">
                                 <div class="ui simple dropdown item">
                                     <i class="dropdown icon"></i>
                                     Действия
                                     <div class="menu">
-                                        {% if item.getBasedOn is Article %}
+                                        {% if prev %}
                                             <a class="item" href="{{urlFor('articles-diff', {new: id, original: prevId})}}">Сравнить</a>
                                         {% endif %}
                                     </div>

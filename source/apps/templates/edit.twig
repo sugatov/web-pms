@@ -35,7 +35,7 @@
                     </select>
                 </div>
                 <div class="field" data-bind="if: article.type() == 'Event'">
-                    <input type="date" placeholder="Дата в формате ISO 8601..." data-bind="datepicker: {dateFormat: 'yy-mm-dd'}, textInput: article.eventDate">
+                    <input type="date" placeholder="Дата в формате ISO 8601..." data-bind="textInput: article.eventDate, inputshim">
                 </div>
                 <div class="field">
                     <div class="ui two column grid">

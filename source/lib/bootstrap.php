@@ -141,6 +141,11 @@ return call_user_func(function () {
             array($SL['LOCAL_LIB'] . "/App/Model/Entities"),
             $SL['config']['app']['debug']
         );
+
+        $configuration->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $configuration->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $configuration->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+        
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }

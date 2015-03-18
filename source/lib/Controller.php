@@ -1,7 +1,6 @@
 <?php
 use \ArrayAccess;
 use \Slim;
-use \Opensoft\SimpleSerializer\Serializer;
 
 
 class Controller

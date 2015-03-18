@@ -1,7 +1,14 @@
-<ul>
+<div class="ui link list">
     {% for item in list %}
-        <a href="{{ urlFor('articles-show', {name:item.getName}) }}">
-            <li>{{item.getName()}}</li>
-        </a>
+            <a class="item" href="{{ urlFor('articles-show', {name:item.getName}) }}">
+                {% if item is Location %}
+                    <i class="marker icon"></i>
+                {% elseif item is Event %}
+                    <i class="calendar outline icon"></i>
+                {% else %}
+                    <i class="file text outline icon"></i>
+                {% endif %}
+                {{item.getName()}}
+            </a>
     {% endfor %}
-</ul>
+</div>

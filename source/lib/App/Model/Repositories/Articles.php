@@ -102,4 +102,138 @@ class Articles extends EntityRepository
         return $this->createQueryBuilder($alias)
                     ->groupBy($alias . '.name');
     }
+
+    /**
+     * @param  integer $year
+     * @param  integer $month
+     * @param  integer $day
+     * @return \Doctrine\ORM\Query
+     */
+    public function getEventsByDateQuery($year, $month = null, $day = null)
+    {
+        $queryBuilder = $this->getEntityManager()
+                             ->getRepository('App:Event')
+                             ->createQueryBuilder('e');
+        $queryBuilder->where('YEAR(e.eventDate) = :year')
+                     ->setParameter('year', intval($year));
+        if ($month) {
+            $queryBuilder->andWhere('MONTH(e.eventDate) = :month')
+                         ->setParameter('month', intval($month));
+        }
+        if ($day) {
+            $queryBuilder->andWhere('DAY(e.eventDate) = :day')
+                         ->setParameter('day', intval($day));
+        }
+        return $queryBuilder->groupBy('e.name')->getQuery();
+    }
+
+    /**
+     * @param  integer $century
+     * @return \Doctrine\ORM\Query
+     */
+    public function getEventsByCenturyQuery($century)
+    {
+        $dql = "SELECT e
+                FROM App:Event e
+                WHERE
+                    SUBSTRING(YEAR(e.eventDate), 1, 2) = :century
+                GROUP BY e.name";
+        return $this->getEntityManager()
+                    ->createQuery($dql)
+                    ->setParameter('century', intval($century)-1);
+    }
+
+    /**
+     * @param  integer $century
+     * @param  integer $decade
+     * @return \Doctrine\ORM\Query
+     */
+    public function getEventsByDecadeQuery($century, $decade)
+    {
+        $dql = "SELECT e
+                FROM App:Event e
+                WHERE
+                    SUBSTRING(YEAR(e.eventDate), 1, 3) = CONCAT(:century, :decade)
+                GROUP BY e.name";
+        return $this->getEntityManager()
+                    ->createQuery($dql)
+                    ->setParameter('century', intval($century)-1)
+                    ->setParameter('decade', intval($decade)-1);
+    }
+
+
+    // TODO: Get this by 1 query if that's possible
+    /**
+     * @return array
+     */
+    public function getEventCenturyList()
+    {
+        $dql = "SELECT SUBSTRING(YEAR(e.eventDate), 1, 2) century, COUNT(e) length
+                FROM App:Event e
+                GROUP BY century";
+        $list = $this->getEntityManager()->createQuery($dql)->getResult();
+        foreach ($list as &$item) {
+            $item['century'] += 1;
+            unset($item);
+        }
+        return $list;
+    }
+
+    /**
+     * @param integer $century
+     * @return array
+     */
+    public function getEventDecadeList($century)
+    {
+        $century = intval($century) - 1;
+        $dql = "SELECT SUBSTRING(YEAR(e.eventDate), 1, 2) century, SUBSTRING(YEAR(e.eventDate), 3, 1) decade, COUNT(e) length
+                FROM App:Event e
+                WHERE SUBSTRING(YEAR(e.eventDate), 1, 2) = :century
+                GROUP BY century, decade";
+        $list = $this->getEntityManager()
+                     ->createQuery($dql)
+                     ->setParameter('century', $century)
+                     ->getResult();
+        foreach ($list as &$item) {
+            $item['century'] += 1;
+            $item['decade'] += 1;
+            unset($item);
+        }
+        return $list;
+    }
+
+    /**
+     * @param integer $century
+     * @param integer $decade
+     * @return array
+     */
+    public function getEventYearList($century, $decade)
+    {
+        $century = intval($century) - 1;
+        $decade = $century . (intval($decade) - 1);
+        $dql = "SELECT YEAR(e.eventDate) year, COUNT(e) length
+                FROM App:Event e
+                WHERE SUBSTRING(YEAR(e.eventDate), 1, 3) = :decade
+                GROUP BY year";
+        return $this->getEntityManager()
+                    ->createQuery($dql)
+                    ->setParameter('decade', $decade)
+                    ->getResult();
+    }
+
+    /**
+     * @param  integer $year
+     * @return array
+     */
+    public function getEventMonthList($year)
+    {
+        $dql = "SELECT MONTH(e.eventDate) month, COUNT(e) length
+                FROM App:Event e
+                WHERE YEAR(e.eventDate) = :year
+                GROUP BY month";
+        return $this->getEntityManager()
+                    ->createQuery($dql)
+                    ->setParameter('year', intval($year))
+                    ->getResult();
+    }
 }

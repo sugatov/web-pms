@@ -5,6 +5,12 @@ HistoryWiki.EditVM = function (article, formElement, createMode) {
     this.nameChangeNotifyState  = false;
     this.preview                = ko.observable('');
     this.previewIsLoading       = ko.observable(false);
+    if (article.date && article.date.length > 10) {
+        article.date = article.date.substr(0,10); // ISO-8601 date cut
+    }
+    if (article.eventDate && article.eventDate.length > 10) {
+        article.eventDate = article.eventDate.substr(0,10); // ISO-8601 date cut
+    }
     this.article = {
         type:       ko.observable(article.type),
         name:       ko.observable(article.name),
@@ -22,16 +28,19 @@ HistoryWiki.EditVM = function (article, formElement, createMode) {
             alert('Введите имя статьи!');
             return;
         }
-        jQuery.ajax({
-            cache: false,
-            data: {article: self.serialized()},
-            type: 'post',
-            url: '/preview',
-            success: function(response) {
-                self.preview(response.data.content);
+        var url = HistoryWiki.getService('preview');
+        var formData = new FormData();
+        formData.append('article', self.serialized());
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.responseType = 'text'; //IE workaround
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                self.preview(JSON.parse(this.response).data.content);
                 self.previewIsLoading(false);
             }
-        });
+        };
+        xhr.send(formData);
     };
 
     this.uploads = function () {

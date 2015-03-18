@@ -26,7 +26,7 @@ class Articles extends Controller
     protected function getCached($name)
     {
         $cacheKey = 'article#' . $name;
-        if ($this->cache()->exists($cacheKey, 86400)) {
+        if ($this->cache()->exists($cacheKey, 43200)) {
             $article = $this->cache()->get($cacheKey);
             $article = unserialize($article);
             return $article;
@@ -38,8 +38,11 @@ class Articles extends Controller
     public function index()
     {
         $list = null;
-        if ( ! $this->cache()->exists('articles.latestupdates', 300)) {
-            $list = $this->articles()->getLatestUpdatesQuery()->getResult();
+        if ( ! $this->cache()->exists('articles.latestupdates', 14400)) {
+            $list = $this->articles()
+                         ->getLatestUpdatesQuery()
+                         ->setMaxResults(20)
+                         ->getResult();
             $this->cache()->set('articles.latestupdates', serialize($list));        
         } else {
             $list = unserialize($this->cache()->get('articles.latestupdates'));
@@ -196,15 +199,34 @@ class Articles extends Controller
         $this->render('articles.twig', array('title'=>'События', 'list'=>$list));
     }
 
-    public function eventsByDate($year=null, $month=null, $day=null)
+    public function eventsByDate($year, $month=null, $day=null)
     {
+        $list = $this->articles()->getEventsByDateQuery($year, $month, $day)->getResult();
+        $this->render('events.twig', array('list'=>$list,
+                                           'year'=>$year,
+                                           'month'=>$month,
+                                           'day'=>$day));
+    }
 
+    public function eventsByCentury($century)
+    {
+        $list = $this->articles()->getEventsByCenturyQuery($century)->getResult();
+        $this->render('events.twig', array('list'=>$list,
+                                           'century'=>$century));
+    }
+
+    public function eventsByDecade($century, $decade)
+    {
+        $list = $this->articles()->getEventsByDecadeQuery($century, $decade)->getResult();
+        $this->render('events.twig', array('list'=>$list,
+                                           'century'=>$century,
+                                           'decade'=>$decade));
     }
 
     public function search()
     {
         $name = $this->request()->post('name');
-        if ( ! $this->cache()->exists("articles.search=$name", 3600)) {
+        if ( ! $this->cache()->exists("articles.search=$name", 43200)) {
             $list = $this->articles()
                          ->createNonrecurringQueryBuilder('art')
                          ->where('art.name LIKE :name')
