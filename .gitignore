@@ -8,3 +8,4 @@
 /source/data/cache/filecache
 /source/lib/composer.lock
 *.php~
+/source/lib/composer.phar

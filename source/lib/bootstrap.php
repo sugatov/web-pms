@@ -5,8 +5,6 @@ use Doctrine\ORM as ORM;
 use Doctrine\DBAL\Types\Type as Type;
 use Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
 use Doctrine\StdErrSQLLogger;
-use ProxyManager\Factory\LazyLoadingValueHolderFactory;
-use ProxyManager\Proxy\LazyLoadingInterface;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
@@ -265,14 +263,9 @@ return call_user_func(function () {
         return new \Diff;
     };
     
-    $SL['proxyFactory'] = function () {
-        return new LazyLoadingValueHolderFactory();
-    };
-
     $SL['users'] = function() use ($SL) {
         return new \App\Services\Users($SL['entityManager']);
     };
-
 
     $SL['articles'] = function() use ($SL) {
         return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
@@ -280,16 +273,6 @@ return call_user_func(function () {
 
     $SL['uploads'] = function() use ($SL) {
         return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
-    };
-
-    $SL['controllers.Cache'] = function() use ($SL) {
-        return new \App\Controllers\Cache(
-            $SL['app'],
-            $SL['serializer'],
-            $SL['session'],
-            $SL['globalViewScope'],
-            $SL
-        );
     };
 
 
