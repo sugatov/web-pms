@@ -177,9 +177,11 @@ return call_user_func(function () {
         $config = $SL['config']['slim'];
         $view = new \Slim\Views\Twig();
         $view->parserOptions = array(
-            'debug' => $SL['config']['app']['debug'],
-            'cache' => $SL['LOCAL_DATA'] . '/cache/templates'
+            'debug' => $SL['config']['app']['debug']
         );
+        if ( ! $SL['config']['app']['debug']) {
+            $view->parserOptions['cache'] = $SL['LOCAL_DATA'] . '/cache/templates';
+        }
         $view->parserExtensions = array(
             new \Slim\Views\TwigExtension(),
             new \App\Twig\Extensions\EntityTests(),
