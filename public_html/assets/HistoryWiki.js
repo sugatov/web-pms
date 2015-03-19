@@ -23,3 +23,19 @@ HistoryWiki.getService = function (name) {
         throw 'Service not found!';
     }
 };
+
+
+// NOTE: jQuery dependency:
+HistoryWiki.formatArticle = function (element) {
+    if ( ! (element instanceof jQuery)) {
+        element = jQuery(element);
+    }
+    element.find('h1,h2,h3,h4,h5,h6').addClass('ui header');
+    element.find('img:even').addClass('ui small bordered left floated image')
+    element.find('img:odd').addClass('ui small bordered right floated image')
+    element.find('p img').each(function () {
+        var img = jQuery(this);
+        var parent = img.parent();
+        img.insertBefore(parent);
+    });
+}

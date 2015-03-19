@@ -1,12 +1,13 @@
 <?php
-namespace App;
+namespace App\Services;
 
 use CacheInterface;
-use MarkdownParser;
 use StorageInterface;
+use MarkdownParser;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Services;
 
-interface ControllerServiceProviderInterface extends \ControllerServiceProviderInterface
+interface ServiceProviderInterface
 {
     /**
      * @return CacheInterface
@@ -20,6 +21,10 @@ interface ControllerServiceProviderInterface extends \ControllerServiceProviderI
      * @return MarkdownParser
      */
     public function getMarkdownParser();
+    /**
+     * @return EntityManagerInterface
+     */
+    public function getEntityManager();
     /**
      * @return Services\Users
      */

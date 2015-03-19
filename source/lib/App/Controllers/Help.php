@@ -9,7 +9,7 @@ class Help extends Controller
     {
         $title   = 'Помощь';
         $content = null;
-        if ( ! $this->cache()->exists('help.index', 300)) {
+        if ( ! $this->cache()->exists('help.index', 86400)) {
             $content = $this->storage()->read('help.index');
             $content = $this->markdownParser()->parse($content);
             $this->cache()->set('help.index', $content);

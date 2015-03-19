@@ -1,11 +1,27 @@
 <?php
 namespace App\Controllers;
 
+use Slim;
 use App\Controller;
+use App\ControllerServiceProviderInterface;
 use App\Model\Entities\Article;
 
 class Articles extends Controller
 {
+    /**
+     * @param Slim\Slim                             $application
+     * @param array                                 $globalViewScope    Scope to share through all views
+     * @param ControllerServiceProviderInterface    $serviceProvider
+     */
+    public function __construct(Slim\Slim $application,
+                                $globalViewScope,
+                                ControllerServiceProviderInterface $serviceProvider)
+    {
+        parent::__construct($application, $globalViewScope, $serviceProvider);
+
+        $this->isJsonResponse(false, 'template.twig');
+    }
+
     protected function prepareForView(Article $article)
     {
         $article->setContent($this->markdownParser()->parse($article->getContent()));
@@ -47,13 +63,18 @@ class Articles extends Controller
         } else {
             $list = unserialize($this->cache()->get('articles.latestupdates'));
         }
-        $this->render('index.twig', array('list' => $list));
+        $this->render('index.twig', array('list' => $list,
+                                          'popularAllTime' => $this->statistics()->getPopularAllTime(),
+                                          'popularThisMonth' => $this->statistics()->getPopularThisMonth(),
+                                          'popularThisWeek' => $this->statistics()->getPopularThisWeek(),
+                                          'popularToday' => $this->statistics()->getPopularToday()));
     }
 
     public function show($name)
     {
         $article = $this->getCached($name);
         if ($article) {
+            $this->statistics()->articleHasBeenShown($name);
             $this->render(
                 'article.twig',
                 array(

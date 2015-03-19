@@ -5,6 +5,7 @@ HistoryWiki.EditVM = function (article, formElement, createMode) {
     this.nameChangeNotifyState  = false;
     this.preview                = ko.observable('');
     this.previewIsLoading       = ko.observable(false);
+    this.previewElement         = document.getElementById('article-preview');
     if (article.date && article.date.length > 10) {
         article.date = article.date.substr(0,10); // ISO-8601 date cut
     }
@@ -37,6 +38,7 @@ HistoryWiki.EditVM = function (article, formElement, createMode) {
         xhr.onload = function(e) {
             if (this.status == 200) {
                 self.preview(JSON.parse(this.response).data.content);
+                HistoryWiki.formatArticle(self.previewElement);
                 self.previewIsLoading(false);
             }
         };

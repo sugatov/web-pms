@@ -15,4 +15,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
         searchForm.submit();
         return true;
     });
+
+    // NOTE: jQuery dependency
+    jQuery('.tabular.menu .item').tab();
 });

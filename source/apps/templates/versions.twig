@@ -42,7 +42,7 @@
                         {% set prev = item.getBasedOn %}
                         {% set prevId = item.getBasedOn.getId %}
                         <td><a target="_blank" href="{{urlFor('articles-version', {id: id})}}">{{id}}</a></td>
-                        <td>{{item.getDate|date('d.m.Y')}}</td>
+                        <td>{{item.getDate|date('d.m.Y H:i:s')}}</td>
                         <td>{{item.getName}}</td>
                         <td>
                             {% if prev %}
@@ -53,7 +53,7 @@
                         </td>
                         <td>
                             {% if prev %}
-                                {{prev.getDate|date('d.m.Y')}}
+                                {{prev.getDate|date('d.m.Y H:i:s')}}
                             {% else %}
                                 -
                             {% endif %}

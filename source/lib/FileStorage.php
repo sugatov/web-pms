@@ -47,7 +47,20 @@ class FileStorage implements StorageInterface
     public function write($name, $data)
     {
         $filename = $this->getFilename($name);
-        if (file_put_contents($filename, $data) === false) {
+        if (file_put_contents($filename, $data, LOCK_EX) === false) {
+            throw new \RuntimeException('Could not write to storage!');
+        }
+    }
+
+    /**
+     * @param  string $name
+     * @param  string $data
+     * @throws \RuntimeException
+     */
+    public function append($name, $data)
+    {
+        $filename = $this->getFilename($name);
+        if (file_put_contents($filename, $data, FILE_APPEND | LOCK_EX) === false) {
             throw new \RuntimeException('Could not write to storage!');
         }
     }

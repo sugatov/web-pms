@@ -32,4 +32,9 @@ class ControllerServiceProvider extends \ControllerServiceProvider implements Co
     {
         return $this->serviceLocator['uploads'];
     }
+
+    public function getStatistics()
+    {
+        return $this->serviceLocator['statistics'];
+    }
 }

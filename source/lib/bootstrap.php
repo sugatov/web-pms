@@ -275,6 +275,10 @@ return call_user_func(function () {
         return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
     };
 
+    $SL['statistics'] = function () use ($SL) {
+        return new \App\Services\Statistics(new \App\Services\ServiceProvider($SL));
+    };
+
 
     return $SL;
 });

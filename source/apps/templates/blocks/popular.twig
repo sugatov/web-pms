@@ -1,0 +1,8 @@
+<div class="ui link list">
+    {% for item in list %}
+            <a class="item" href="{{ urlFor('articles-show', {name:item.article}) }}">
+                <i class="file text outline icon"></i>
+                {{item.article}}
+            </a>
+    {% endfor %}
+</div>

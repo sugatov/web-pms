@@ -43,7 +43,7 @@ class Upload extends Super\IntegerID
     private $mimeType = null;
     
     /**
-     * @Column(type="string", length=50, unique=false, nullable=true)
+     * @Column(type="string", unique=false, nullable=true)
      */
     private $tag = null;
 

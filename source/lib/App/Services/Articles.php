@@ -123,12 +123,18 @@ class Articles extends RepositoryBasedService
         $originalName = $original->getName() . ' ' . $original->getDate()->format('d.m.Y H:i:s');
         $originalText = $original->getContent();
         if ($original instanceof Event) {
-            $originalText = 'Дата события: ' . $original->getEventDate()->format('d.m.Y') . "\n" . $originalText;
+            $originalText = "Событие\nДата события: " . $original->getEventDate()->format('d.m.Y') . "\n" . $originalText;
+        }
+        if ($original instanceof Location) {
+            $originalText = "Локация\n" . $originalText;
         }
         $newName = $new->getName() . ' ' . $new->getDate()->format('d.m.Y H:i:s');
         $newText = $new->getContent();
         if ($new instanceof Event) {
-            $newText = 'Дата события: ' . $new->getEventDate()->format('d.m.Y') . "\n" . $newText;
+            $newText = "Событие\nДата события: " . $new->getEventDate()->format('d.m.Y') . "\n" . $newText;
+        }
+        if ($new instanceof Location) {
+            $newText = "Локация\n" . $newText;
         }
         return $this->compareTool->compare($originalText, $newText, $originalName, $newName);
     }

@@ -15,6 +15,12 @@ interface StorageInterface
 
     /**
      * @param  string $name
+     * @param  string $data
+     */
+    public function append($name, $data);
+
+    /**
+     * @param  string $name
      * @return boolean
      */
     public function exists($name);

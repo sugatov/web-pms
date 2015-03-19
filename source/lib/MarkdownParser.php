@@ -60,7 +60,7 @@ REGEXP;
                              'element' => $element);
             } else {
                 $regexp = <<<REGEXP
-                /\(=([\d\w\h]+)([\h]+"([\d\w\h]*)")?\)/u
+                /\(=([\d\w\h\.,]+)([\h]+"([\d\w\h]*)")?\)/u
 REGEXP;
                 if (preg_match($regexp, $text, $matches)) {
                     $url = $this->_url->getUrl('articles-show', array('name'=>$matches[1]));

@@ -85,6 +85,14 @@ class Controller extends \Controller
     }
 
     /**
+     * @return Services\Statistics
+     */
+    protected function statistics()
+    {
+        return $this->serviceProvider->getStatistics();
+    }
+
+    /**
      * @return array
      */
     protected function prepareEventDatesTree()
