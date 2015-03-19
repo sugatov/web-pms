@@ -1,0 +1,6 @@
+help-index:
+    active: true
+    pattern: "/"
+    methods: ["GET"]
+    controller: "Help"
+    action: "index"

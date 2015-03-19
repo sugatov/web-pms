@@ -8,6 +8,7 @@ use \App\Model\Entities\Article;
 use \App\Model\Entities\Event;
 use \App\Model\Entities\Location;
 use \App\Model\Entities\User;
+use \App\Model\Repositories\Articles as ArticlesRepository;
 
 
 class Articles extends RepositoryBasedService
@@ -31,6 +32,14 @@ class Articles extends RepositoryBasedService
 
         $this->compareTool = $compareTool;
     }
+
+    /**
+     * @return ArticlesRepository
+     */
+    public function getRepository()
+    {
+        return $this->repository;
+    }    
 
     /**
      * Create an instance of Article
@@ -89,10 +98,11 @@ class Articles extends RepositoryBasedService
      */
     public function modify(Article $new, $old, User $user)
     {
-        if ( ! $old instanceof Article && is_int($old)) {
+        if ( ! $old instanceof Article) {
+            $old = (int) $old;
             $old = $this->repository->find($old);
         }
-        if ( ! $old) {
+        if ($old == null) {
             throw new \Exception('Неправильный идентификатор предыдущей версии статьи!');
         }
         $new->setUser($user);
@@ -113,12 +123,18 @@ class Articles extends RepositoryBasedService
         $originalName = $original->getName() . ' ' . $original->getDate()->format('d.m.Y H:i:s');
         $originalText = $original->getContent();
         if ($original instanceof Event) {
-            $originalText = 'Дата события: ' . $original->getEventDate()->format('d.m.Y') . "\n" . $originalText;
+            $originalText = "Событие\nДата события: " . $original->getEventDate()->format('d.m.Y') . "\n" . $originalText;
+        }
+        if ($original instanceof Location) {
+            $originalText = "Локация\n" . $originalText;
         }
         $newName = $new->getName() . ' ' . $new->getDate()->format('d.m.Y H:i:s');
         $newText = $new->getContent();
         if ($new instanceof Event) {
-            $newText = 'Дата события: ' . $new->getEventDate()->format('d.m.Y') . "\n" . $newText;
+            $newText = "Событие\nДата события: " . $new->getEventDate()->format('d.m.Y') . "\n" . $newText;
+        }
+        if ($new instanceof Location) {
+            $newText = "Локация\n" . $newText;
         }
         return $this->compareTool->compare($originalText, $newText, $originalName, $newName);
     }

@@ -1,22 +1,23 @@
 <?php
 namespace Twig\Extensions;
 
-use \ServiceLocator;
+use Twig_Extension;
+use Twig_SimpleFilter;
 
-class Filters
+class Filters extends Twig_Extension
 {
-    public static function register(\Twig_Environment $twig)
+    public function getName()
     {
-        $twig->addFilter(new \Twig_SimpleFilter('count',       'count'));
-        $twig->addFilter(new \Twig_SimpleFilter('is_array',    'is_array'));
-        $twig->addFilter(new \Twig_SimpleFilter('var_dump',    'var_dump'));
-        
-        $twig->addFilter(new \Twig_SimpleFilter('paths', array(__CLASS__, 'paths')));
+        return 'history-wiki-dev-filters';
     }
 
-    public static function paths($value)
+    public function getFilters()
     {
-        $SL = ServiceLocator::getInstance();
-        return $SL['fixPaths']($value);
+        return array(
+            new Twig_SimpleFilter('count',      'count'),
+            new Twig_SimpleFilter('is_array',   'is_array'),
+            new Twig_SimpleFilter('var_dump',   'var_dump'),
+            new Twig_SimpleFilter('print_r',    'print_r')
+        );
     }
 }

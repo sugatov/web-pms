@@ -1,0 +1,131 @@
+{% block menu %}
+    <div id="top-menu" class="ui fixed inverted menu">
+        <div class="link item" href="#" onclick="window.history.back()">
+            <i class="arrow left icon"></i>
+        </div>
+        <a class="item" href="/">
+            <i class="home icon"></i>
+        </a>
+        {% block menuitems %}
+            <div class="ui simple dropdown item">
+                <i class="filter icon"></i>
+                Категории
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <a class="item" href="{{urlFor('articles-all')}}">
+                        <i class="asterisk icon"></i>
+                            Все
+                    </a>
+                    {% if eventDatesTree %}
+                        <div class="ui simple dropdown item">
+                            <i class="dropdown icon"></i>
+                            События
+                            <div class="menu">
+                                <a class="item" href="{{urlFor('articles-events')}}">
+                                    Все
+                                </a>
+                                <div class="divider"></div>
+                                <div class="header">
+                                    Века:
+                                </div>
+                                {% for century in eventDatesTree %}
+                                    <div class="ui simple dropdown item">
+                                        <i class="dropdown icon"></i>
+                                        {{ century.century }}
+                                        <span class="description">
+                                            {{ century.length }}
+                                        </span>
+                                        <div class="menu">
+                                            <div class="header">
+                                                Декады:
+                                            </div>
+                                            <a class="item" href="{{urlFor('articles-events-by-century', {century: century.century})}}">
+                                                Все
+                                                <span class="description">
+                                                    {{ century.length }}
+                                                </span>
+                                            </a>
+                                            {% for decade in century.decades %}
+                                                <div class="ui simple dropdown item">
+                                                    <i class="dropdown icon"></i>
+                                                    {{ decade.decade }}
+                                                    <span class="description">
+                                                        {{ decade.length }}
+                                                    </span>
+                                                    <div class="menu">
+                                                        <div class="header">
+                                                            Годы:
+                                                        </div>
+                                                        <a class="item" href="{{urlFor('articles-events-by-decade', {century: century.century, decade: decade.decade})}}">
+                                                            Все
+                                                            <span class="description">
+                                                                {{ decade.length }}
+                                                            </span>
+                                                        </a>
+                                                        {% for year in decade.years %}
+                                                            <div class="ui simple dropdown item">
+                                                                <i class="dropdown icon"></i>
+                                                                {{ year.year }}
+                                                                <span class="description">
+                                                                    {{ year.length }}
+                                                                </span>
+                                                                <div class="menu">
+                                                                    <div class="header">
+                                                                        Месяцы:
+                                                                    </div>
+                                                                    <a class="item" href="{{urlFor('articles-events-by-date', {year: year.year})}}">
+                                                                        Все
+                                                                        <span class="description">
+                                                                            {{ year.length }}
+                                                                        </span>
+                                                                    </a>
+                                                                    {% for month in year.months %}
+                                                                        <a class="item" href="{{urlFor('articles-events-by-date', {year: year.year, month: month.month})}}">
+                                                                            {{ month.month }}
+                                                                            <span class="description">
+                                                                                {{ month.length }}
+                                                                            </span>
+                                                                        </a>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <a class="item" href="{{urlFor('articles-events')}}">
+                            События
+                        </a>
+                    {% endif %}
+                    <a class="item" href="{{urlFor('articles-locations')}}">
+                        Локации
+                    </a>
+                </div>
+            </div>
+            <a class="item" rel="nofollow" href="{{urlFor('articles-create')}}">
+                <i class="write icon"></i>
+                Написать статью
+            </a>
+        {% endblock %}
+        <div class="right menu">
+            <a class="item" href="{{urlFor('help-index')}}">
+                <i class="help icon"></i>
+                Помощь
+            </a>
+            <div class="item">
+                <div class="ui icon input">
+                    <form method="post" action="{{urlFor('articles-search')}}" id="menu-search-form">
+                        <input placeholder="Поиск..." type="text" name="name" required id="menu-search-input">
+                    </form>
+                    <i class="search link icon" id="menu-search-submit"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

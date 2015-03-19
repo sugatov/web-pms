@@ -1,0 +1,15 @@
+{% if errors|length > 0 %}
+    <div class="ui segment">
+        <h3 class="ui red header">
+            К сожалению, во время выполнения произошли следующие ошибки:
+        </h3>
+        {% for error in errors %}
+            <div class="ui red message">
+                <div class="header">
+                    {{ error.message }}
+                </div>
+                Код ошибки: {{error.code}}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

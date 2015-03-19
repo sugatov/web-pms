@@ -1,10 +1,10 @@
 <?php
-use \Pimple\Container as Pimple;
-use \Opensoft\SimpleSerializer as OSS;
-use \Doctrine\ORM as ORM;
-use \Doctrine\DBAL\Types\Type as Type;
-use \Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
-use \Doctrine\StdErrSQLLogger;
+use Pimple\Container as Pimple;
+use Opensoft\SimpleSerializer as OSS;
+use Doctrine\ORM as ORM;
+use Doctrine\DBAL\Types\Type as Type;
+use Doctrine\DBAL\Event\Listeners\MysqlSessionInit;
+use Doctrine\StdErrSQLLogger;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
@@ -90,6 +90,10 @@ return call_user_func(function () {
         return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
     };
 
+    $SL['storage'] = function () use ($SL) {
+        return new \FileStorage($SL['LOCAL_DATA'] . '/filestorage');
+    };
+
     $SL['config'] = function () use ($SL) {
         return new \YamlSource($SL['LOCAL_APPS'] . '/configs/config.yml', $SL['PATHS']);
     };
@@ -135,6 +139,11 @@ return call_user_func(function () {
             array($SL['LOCAL_LIB'] . "/App/Model/Entities"),
             $SL['config']['app']['debug']
         );
+
+        $configuration->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
+        $configuration->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
+        $configuration->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
+        
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
@@ -157,7 +166,7 @@ return call_user_func(function () {
         return $em;
     };
 
-    $SL['assets'] = function ($SL) {
+    $SL['assets'] = function () use ($SL) {
         return $SL['config']['app']['assets'];
     };
 
@@ -166,12 +175,15 @@ return call_user_func(function () {
         $config = $SL['config']['slim'];
         $view = new \Slim\Views\Twig();
         $view->parserOptions = array(
-            'debug' => $SL['config']['app']['debug'],
-            'cache' => $SL['LOCAL_DATA'] . '/cache/templates'
+            'debug' => $SL['config']['app']['debug']
         );
+        if ( ! $SL['config']['app']['debug']) {
+            $view->parserOptions['cache'] = $SL['LOCAL_DATA'] . '/cache/templates';
+        }
         $view->parserExtensions = array(
             new \Slim\Views\TwigExtension(),
-            new \App\Twig\Extensions\EntityTests()
+            new \App\Twig\Extensions\EntityTests(),
+            new \Twig\Extensions\Filters()
         );
         $config['view']           = $view;
         $config['templates.path'] = $SL['LOCAL_APPS'] . '/templates';
@@ -230,28 +242,17 @@ return call_user_func(function () {
         }
         $className = 'App\\Controllers\\' . $name;
         if (is_subclass_of($className, 'App\\Controller')) {
-            $application     = $SL['app'];
-            $serializer      = $SL['serializer'];
-            $session         = $SL['session'];
-            $globalViewScope = $SL['globalViewScope'];
-            $cache           = $SL['cache'];
-            $markdown        = $SL['markdownParser'];
-            $users           = $SL['users'];
-            $articles        = $SL['articles'];
-            return new $className($application,
-                                  $serializer,
-                                  $session,
-                                  $globalViewScope,
-                                  $cache,
-                                  $markdown,
-                                  $users,
-                                  $articles);
+            return new $className($SL['app'],
+                                  $SL['globalViewScope'],
+                                  new \App\ControllerServiceProvider($SL));
         }
         throw new \RuntimeException('Have no way to create a controller of this type!');
     });
 
     $SL['markdownParser'] = function($SL) {
-        return new \MarkdownParser();
+        return new \MarkdownParser($SL['url'],
+                                   $SL['uploads'],
+                                   $SL['PUBLIC_UPLOADS']);
     };
 
     $SL['url'] = function() use ($SL) {
@@ -261,13 +262,21 @@ return call_user_func(function () {
     $SL['diff'] = function() {
         return new \Diff;
     };
-
+    
     $SL['users'] = function() use ($SL) {
         return new \App\Services\Users($SL['entityManager']);
     };
 
     $SL['articles'] = function() use ($SL) {
         return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
+    };
+
+    $SL['uploads'] = function() use ($SL) {
+        return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
+    };
+
+    $SL['statistics'] = function () use ($SL) {
+        return new \App\Services\Statistics(new \App\Services\ServiceProvider($SL));
     };
 
 

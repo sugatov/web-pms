@@ -1,2 +1,2 @@
-debug: true
-log.level: 4
+debug: false
+log.level: 1

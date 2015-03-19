@@ -6,9 +6,12 @@ app:
             - "./assets/debug.yml"
 
     routes:
-        "/dev":
-            !imports:
-                - "./routers/dev.yml"
         "":
             !imports:
                 - "./routers/articles.yml"
+        "/uploads":
+            !imports:
+                - "./routers/uploads.yml"
+        "/help":
+            !imports:
+                - "./routers/help.yml"

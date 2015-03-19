@@ -1,13 +1,37 @@
-<!DOCTYPE html>
-<html>
-<head lang="ru">
-    <meta charset="UTF-8">
-    <title>
-        {% block title %}{% endblock %}
-    </title>
-</head>
-<body>
-    {% block body %}
-    {% endblock %}
-</body>
-</html>
+{% extends 'template.twig' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block body %}
+    <div class="ui two column grid">
+        <div class="column">
+            <div class="ui segment">
+                <h1 class="ui header">Последние статьи</h1>
+                {% include 'articles-list.twig' with {list: list} only %}
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui segment">
+                <h1 class="ui header">Популярные статьи</h1>
+                <div class="ui top attached tabular menu">
+                    <a class="active item" data-tab="today">Сегодня</a>
+                    <a class="item" data-tab="week">На этой неделе</a>
+                    <a class="item" data-tab="month">В этом месяце</a>
+                    <a class="item" data-tab="alltime">За всё время</a>
+                </div>
+                <div class="ui bottom attached active tab segment" data-tab="today">
+                    {% include 'blocks/popular.twig' with {list: popularToday} only %}
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="week">
+                    {% include 'blocks/popular.twig' with {list: popularThisWeek} only %}
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="month">
+                    {% include 'blocks/popular.twig' with {list: popularThisMonth} only %}
+                </div>
+                <div class="ui bottom attached tab segment" data-tab="alltime">
+                    {% include 'blocks/popular.twig' with {list: popularAllTime} only %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

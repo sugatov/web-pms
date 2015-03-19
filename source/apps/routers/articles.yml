@@ -1,7 +1,90 @@
+articles-home:
+    active: true
+    pattern: "/"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "index"
 articles-show:
     active: true
-    pattern: "/:name"
-    methods:
-        - "GET"
+    pattern: "/article/:name"
+    methods: ["GET"]
     controller: "Articles"
     action: "show"
+articles-version:
+    active: true
+    pattern: "/version/:id"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "version"
+articles-versions:
+    active: true
+    pattern: "/versions/:name"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "versions"
+articles-create:
+    active: true
+    pattern: "/create(/:name)"
+    methods: ["GET", "POST"]
+    controller: "Articles"
+    action: "create"
+articles-edit:
+    active: true
+    pattern: "/edit/:id"
+    methods: ["GET", "POST"]
+    controller: "Articles"
+    action: "edit"
+articles-preview:
+    active: true
+    pattern: "/preview"
+    methods: ["POST"]
+    controller: "Articles"
+    action: "preview"
+articles-diff:
+    active: true
+    pattern: "/difference/:original/:new"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "diff"
+articles-search:
+    active: true
+    pattern: "/search"
+    methods: ["POST"]
+    controller: "Articles"
+    action: "search"
+articles-all:
+    active: true
+    pattern: "/all(/:page)"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "all"
+articles-locations:
+    active: true
+    pattern: "/locations(/:page)"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "locations"
+articles-events:
+    active: true
+    pattern: "/events(/:page)"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "events"
+articles-events-by-date:
+    active: true
+    pattern: "/events-by-date/:year(/:month(/:day))"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "eventsByDate"
+articles-events-by-century:
+    active: true
+    pattern: "/events-by-century/:century"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "eventsByCentury"
+articles-events-by-decade:
+    active: true
+    pattern: "/events-by-decade/:century/:decade"
+    methods: ["GET"]
+    controller: "Articles"
+    action: "eventsByDecade"

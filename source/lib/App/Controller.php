@@ -1,59 +1,118 @@
 <?php
 namespace App;
 
-use ArrayAccess;
 use Slim;
-use Opensoft\SimpleSerializer\Serializer;
 use CacheInterface;
 use MarkdownParser;
+use StorageInterface;
 use App\Services;
 
 class Controller extends \Controller
 {
     /**
-     * @var CacheInterface
+     * @var ControllerServiceProviderInterface
      */
-    protected $cache;
+    protected $serviceProvider;
 
     /**
-     * @var MarkdownParser
-     */
-    protected $markdown;
-
-    /**
-     * @var Services\Users
-     */
-    protected $users;
-
-    /**
-     * @var Services\Articles
-     */
-    protected $articles;
-
-    /**
-     * @param Slim\Slim          $application
-     * @param Serializer         $serializer
-     * @param ArrayAccess        $session
-     * @param array              $globalViewScope    Scope to share through all views
-     * @param CacheInterface     $cache
-     * @param MarkdownParser     $markdown
-     * @param Services\Users     $users
-     * @param Services\Articles  $articles
+     * @param Slim\Slim                             $application
+     * @param array                                 $globalViewScope    Scope to share through all views
+     * @param ControllerServiceProviderInterface    $serviceProvider
      */
     public function __construct(Slim\Slim $application,
-                                Serializer $serializer,
-                                ArrayAccess $session,
                                 $globalViewScope,
-                                CacheInterface $cache,
-                                MarkdownParser $markdown,
-                                Services\Users $users,
-                                Services\Articles $articles)
+                                ControllerServiceProviderInterface $serviceProvider)
     {
-        parent::__construct($application, $serializer, $session, $globalViewScope);
+        parent::__construct($application, $globalViewScope, $serviceProvider);
 
-        $this->cache    = $cache;
-        $this->markdown = $markdown;
-        $this->users    = $users;
-        $this->articles = $articles;
+        $cacheKey = 'articles-event-dates-tree';
+        if ($this->cache()->exists($cacheKey, 86400)) {
+            $eventDatesTree = unserialize($this->cache()->get($cacheKey));
+            $this->globalViewScope['eventDatesTree'] = $eventDatesTree;
+        } else {
+            $eventDatesTree = $this->prepareEventDatesTree();
+            $this->cache()->set($cacheKey, serialize($eventDatesTree));
+            $this->globalViewScope['eventDatesTree'] = $eventDatesTree;
+        }
+    }
+
+    /**
+     * @return CacheInterface
+     */
+    protected function cache()
+    {
+        return $this->serviceProvider->getCache();
+    }
+
+    /**
+     * @return StorageInterface
+     */
+    protected function storage()
+    {
+        return $this->serviceProvider->getStorage();
+    }
+
+    /**
+     * @return MarkdownParser
+     */
+    protected function markdownParser()
+    {
+        return $this->serviceProvider->getMarkdownParser();
+    }
+
+    /**
+     * @return Services\Users
+     */
+    protected function users()
+    {
+        return $this->serviceProvider->getUsers();
+    }
+
+    /**
+     * @return Services\Articles
+     */
+    protected function articles()
+    {
+        return $this->serviceProvider->getArticles();
+    }
+
+    /**
+     * @return Services\Uploads
+     */
+    protected function uploads()
+    {
+        return $this->serviceProvider->getUploads();
+    }
+
+    /**
+     * @return Services\Statistics
+     */
+    protected function statistics()
+    {
+        return $this->serviceProvider->getStatistics();
+    }
+
+    /**
+     * @return array
+     */
+    protected function prepareEventDatesTree()
+    {
+        $centuries = $this->articles()->getEventCenturyList();
+        foreach ($centuries as &$century) {
+            $decades = $this->articles()->getEventDecadeList($century['century']);
+            foreach ($decades as &$decade) {
+                $years = $this->articles()->getEventYearList($century['century'], $decade['decade']);
+                foreach ($years as &$year) {
+                    $months = $this->articles()->getEventMonthList($year['year']);
+                    $year['months'] = $months;
+                    unset($year);
+                }
+                $decade['years'] = $years;
+                unset($decade);
+            }
+            $century['decades'] = $decades;
+            unset($century);
+        }
+        return $centuries;
     }
 }

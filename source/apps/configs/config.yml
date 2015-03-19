@@ -5,7 +5,7 @@ slim:
 app:
     timezone: 'Europe/Moscow'
 
-    debug: true
+    debug: false
     sqlLog: false
 
     salt: '!@#$%^&*()'

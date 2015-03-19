@@ -1,0 +1,6 @@
+uploads-show:
+    active: true
+    pattern: "/:tag/:page"
+    methods: ["GET", "POST"]
+    controller: "Uploads"
+    action: "show"

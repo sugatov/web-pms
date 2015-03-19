@@ -1,7 +1,6 @@
 <?php
 use \ArrayAccess;
 use \Slim;
-use \Opensoft\SimpleSerializer\Serializer;
 
 
 class Controller
@@ -11,33 +10,13 @@ class Controller
      */
     protected $app;
     /**
-     * @var Slim\Environment
+     * @var array
      */
-    protected $environment;
+    protected $globalViewScope;
     /**
-     * @var Slim\View
+     * @var ControllerServiceProviderInterface
      */
-    protected $view;
-    /**
-     * @var Slim\Router
-     */
-    protected $router;
-    /**
-     * @var Slim\Http\Request
-     */
-    protected $request;
-    /**
-     * @var Slim\Http\Response
-     */
-    protected $response;
-    /**
-     * @var Serializer
-     */
-    protected $serializer;
-    /**
-     * @var ArrayAccess
-     */
-    protected $session;
+    protected $serviceProvider;
 
     /**
      * @var array
@@ -51,37 +30,71 @@ class Controller
      * @var string
      */
     protected $errorHandlerTemplate;
-    /**
-     * @var array
-     */
-    protected $globalViewScope;
 
 
     /**
-     * @param Slim\Slim     $application
-     * @param Serializer    $serializer
-     * @param ArrayAccess   $session
-     * @param array         $globalViewScope    Scope to share through all views
+     * @param Slim\Slim                             $application
+     * @param array                                 $globalViewScope    Scope to share through all views
+     * @param ControllerServiceProviderInterface    $serviceProvider
      */
-    public function __construct(Slim\Slim $application, Serializer $serializer, ArrayAccess $session, $globalViewScope)
+    public function __construct(Slim\Slim $application,
+                                $globalViewScope,
+                                ControllerServiceProviderInterface $serviceProvider)
     {
-        $this->app                  = $application;
-        $this->environment          = $this->app->environment();
-        $this->view                 = $this->app->view();
-        $this->router               = $this->app->router();
-        $this->request              = $this->app->request();
-        $this->response             = $this->app->response();
-        $this->serializer           = $serializer;
-        $this->session              = $session;
+        $this->app             = $application;
+        $this->globalViewScope = $globalViewScope;
+        $this->serviceProvider = $serviceProvider;
         
+        $this->errors               = array();
         $this->isJsonResponse       = true;
         $this->errorHandlerTemplate = null;
-        $this->errors               = array();
-        $this->globalViewScope      = $globalViewScope;
 
-        $this->serializer->setGroups(array('default'));
         $this->app->error(array($this, 'errorHandler'));
     }
+
+    protected function app()
+    {
+        return $this->app;
+    }
+
+    protected function environment()
+    {
+        return $this->app()->environment();
+    }
+    
+    protected function router()
+    {
+        return $this->app()->router();
+    }
+
+    protected function request()
+    {
+        return $this->app()->request();
+    }
+
+    protected function response()
+    {
+        return $this->app()->response();
+    }
+
+    protected function view()
+    {
+        return $this->app()->view();
+    }
+
+    protected function session()
+    {
+        return $this->serviceProvider->getSession();
+    }
+
+    protected function serializer()
+    {
+        $serializer = $this->serviceProvider->getSerializer();
+        $serializer->setGroups(array('default'));
+        return $serializer;
+    }
+
+
 
     public function beforeDispatch()
     {
@@ -123,7 +136,7 @@ class Controller
     {
         if (is_bool($switch)) {
             $this->isJsonResponse = $switch;
-            if ($switch === true) {
+            if ($switch === false) {
                 if (empty($errorHandlerTemplate)) {
                     throw new \RuntimeException('You should provide an error handler template to switch JSON response off!');
                 }
@@ -135,7 +148,7 @@ class Controller
 
     protected function getRawInput()
     {
-        return $this->environment['slim.input'];
+        return $this->environment()['slim.input'];
     }
 
     protected function jsonResponse($data, $status=0, $message=null)
@@ -149,8 +162,8 @@ class Controller
             'message'       => $message,
             'errors'        => $this->errors
         );
-        $this->app->contentType('application/json;charset=utf-8');
-        $this->response->setBody($this->serializer->serialize($response));
+        $this->app()->contentType('application/json;charset=utf-8');
+        $this->response()->setBody($this->serializer()->serialize($response));
     }
 
     protected function render($template, $scope = array(), $status = null)
@@ -168,8 +181,8 @@ class Controller
             }
             unset($error);
         }
-        $this->app->contentType('text/html;charset=utf-8');
-        $this->app->render($template, $scope, $status);
+        $this->app()->contentType('text/html;charset=utf-8');
+        $this->app()->render($template, $scope, $status);
     }
 
 }

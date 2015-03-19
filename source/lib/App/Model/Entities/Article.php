@@ -5,12 +5,31 @@ use \App\Model\Exceptions\ValidationException;
 
 /**
  * @Entity(repositoryClass="\App\Model\Repositories\Articles")
+ * @HasLifecycleCallbacks
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="type", type="string", length=16)
  * @DiscriminatorMap({"Article" = "Article", "Location" = "Location", "Event" = "Event"})
  */
 class Article extends Super\IntegerID
 {
+    private $_type = null;
+    public function getType()
+    {
+        if ($this->_type == null) {
+            $type = explode('\\', get_class($this));
+            $this->_type = end($type);
+        }
+        return $this->_type;
+    }
+    public function setType($type)
+    {
+        if (in_array($type, array('Article', 'Location', 'Event'))) {
+            $this->_type = $type;
+        } else {
+            throw new ValidationException('Неверный тип статьи!');
+        }
+    }
+
     /**
      * @Column(type="string", unique=false, nullable=false)
      */
@@ -38,12 +57,14 @@ class Article extends Super\IntegerID
      */
     private $user;
 
-
-    public function __construct()
+    /**
+     * @PrePersist
+     * @PreUpdate
+     */
+    public function _prePersist()
     {
         $this->setDate(new \DateTime());
     }
-    
 
     /**
      * Set content

@@ -19,4 +19,14 @@ class Users extends RepositoryBasedService
     {
         parent::__construct($objectManager, 'App:User');
     }
+
+    public function getCurrentUser()
+    {
+        $IPaddr = $_SERVER['REMOTE_ADDR'];
+        // If you serving through a reverse proxy without mod_realip
+        /*if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $IPaddr = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        }*/
+        return $this->find($IPaddr);
+    }
 }
