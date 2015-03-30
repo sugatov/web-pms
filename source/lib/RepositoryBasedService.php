@@ -1,6 +1,6 @@
 <?php
-use \Doctrine\Common\Persistence\ObjectManager;
-use \Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectRepository;
 
 class RepositoryBasedService extends Service
 {

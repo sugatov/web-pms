@@ -3,10 +3,20 @@
 {% block title %}Список загруженных файлов{% endblock %}
 {% block body %}
     <div class="ui segment">
-        {% include 'upload.form.twig' %}
+        <form class="ui form segment" method="POST" enctype="multipart/form-data">
+            <div class="field">
+                <label>
+                    Выберите файл для загрузки
+                    <input type="file" name="uploadfile" required>
+                </label>
+            </div>
+            <input class="ui submit button" type="submit" value="Загрузить">
+        </form>
+
         <h1>Список загруженных файлов</h1>
         
-        {% include 'includes/paginator.twig' %}
+        {% use 'blocks/paginator.twig' %}
+        {% block paginator %}{{parent()}}{% endblock %}
 
         <div class="ui link items">
             {% for item in list %}
@@ -44,7 +54,8 @@
             {% endfor %}
         </div>
         
-        {% include 'includes/paginator.twig' %}
+        {% use 'blocks/paginator.twig' %}
+        {% block paginator %}{{parent()}}{% endblock %}
         
     </div>
 
@@ -55,7 +66,7 @@
                 var list = document.getElementsByClassName('item');
                 for (var i = list.length - 1; i >= 0; i--) {
                     list[i].addEventListener('click', function(event) {
-                        window.opener.HistoryWiki.Uploads.ChooseCallback({
+                        window.opener.App.Uploads.ChooseCallback({
                             id               : this.attributes.getNamedItem('data-id').value,
                             type             : this.attributes.getNamedItem('data-type').value,
                             filename         : this.attributes.getNamedItem('data-filename').value,

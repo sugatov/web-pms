@@ -1,6 +1,0 @@
-App\Model\Entities\Event:
-    properties:
-        eventDate:
-            expose: true
-            type: DateTime
-            groups: ['default']

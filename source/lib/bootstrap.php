@@ -244,41 +244,26 @@ return call_user_func(function () {
         if (is_subclass_of($className, 'App\\Controller')) {
             return new $className($SL['app'],
                                   $SL['globalViewScope'],
-                                  new \App\ControllerServiceProvider($SL));
+                                  new \App\ServiceProvider($SL));
         }
         throw new \RuntimeException('Have no way to create a controller of this type!');
     });
 
     $SL['markdownParser'] = function($SL) {
-        return new \MarkdownParser($SL['url'],
-                                   $SL['uploads'],
-                                   $SL['PUBLIC_UPLOADS']);
+        return new \MarkdownParser();
     };
 
     $SL['url'] = function() use ($SL) {
         return new \SlimURL($SL['app']);
     };
 
-    $SL['diff'] = function() {
-        return new \Diff;
-    };
-    
     $SL['users'] = function() use ($SL) {
         return new \App\Services\Users($SL['entityManager']);
-    };
-
-    $SL['articles'] = function() use ($SL) {
-        return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
     };
 
     $SL['uploads'] = function() use ($SL) {
         return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
     };
-
-    $SL['statistics'] = function () use ($SL) {
-        return new \App\Services\Statistics(new \App\Services\ServiceProvider($SL));
-    };
-
 
     return $SL;
 });

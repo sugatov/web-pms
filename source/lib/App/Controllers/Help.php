@@ -16,6 +16,6 @@ class Help extends Controller
         } else {
             $content = $this->cache()->get('help.index');
         }
-        $this->render('help.twig', array('title'=>$title, 'content'=>$content));
+        $this->render('Help/index.twig', array('title'=>$title, 'content'=>$content));
     }
 }

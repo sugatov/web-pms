@@ -10,8 +10,8 @@
   "dependencies": {
     "semantic-ui": "latest",
     "knockoutjs": "latest",
+    "knockout-es5": "latest",
     "knockout-mapping": "latest",
-    "less.js": ">= 2.0 < 2.2",
-    "highlightjs": "latest"
+    "less.js": ">= 2.0 < 2.2"
   }
 }

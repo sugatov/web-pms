@@ -22,7 +22,7 @@ class Uploads extends Controller
         }
     }
 
-    public function show($tag = null, $page = 1)
+    public function index($tag = null, $page = 1)
     {
         $this->upload($tag);
         $query = $this->uploads()->createQueryBuilder('u')
@@ -38,10 +38,10 @@ class Uploads extends Controller
         $list = new Paginator($query);
         $total = count($list);
         $pages = ceil($total/$perPage);
-        $this->render('upload.list.twig', array('list'=>$list,
-                                                'page'=>$page,
-                                                'pages'=>$pages,
-                                                'urlId'=>'uploads-show',
-                                                'urlParams'=>array('tag'=>$tag)));
+        $this->render('Uploads/index.twig', array('list'=>$list,
+                                                  'page'=>$page,
+                                                  'pages'=>$pages,
+                                                  'urlId'=>'uploads-index',
+                                                  'urlParams'=>array('tag'=>$tag)));
     }
 }

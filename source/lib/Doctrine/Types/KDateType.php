@@ -3,7 +3,7 @@ namespace Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateType;
-use \DateTime_Ymd;
+use DateTime_Ymd;
 
 
 class KDateType extends DateType

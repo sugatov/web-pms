@@ -9,19 +9,19 @@ dev-input:
     pattern: "/input"
     methods:
         - "ANY"
-    controller: "dev"
+    controller: "Dev"
     action: "input"
 dev-hash:
     active: true
     pattern: "/hash"
     methods:
-        - "ANY"
-    controller: "dev"
+        - "GET"
+    controller: "Dev"
     action: "hash"
 dev-env:
     active: false
     pattern: "/env"
     methods:
         - "ANY"
-    controller: "dev"
+    controller: "Dev"
     action: "env"

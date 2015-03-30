@@ -1,8 +1,8 @@
 <?php
 namespace App\Model\Repositories;
 
-use \Doctrine\ORM\EntityRepository;
-use \App\Model\Entities\User;
+use Doctrine\ORM\EntityRepository;
+use App\Model\Entities\User;
 
 class Users extends EntityRepository
 {

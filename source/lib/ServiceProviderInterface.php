@@ -1,7 +1,7 @@
 <?php
 use Opensoft\SimpleSerializer\Serializer;
 
-interface ControllerServiceProviderInterface
+interface ServiceProviderInterface
 {
     /**
      * @return Serializer

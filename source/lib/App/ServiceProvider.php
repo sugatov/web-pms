@@ -1,7 +1,7 @@
 <?php
 namespace App;
 
-class ControllerServiceProvider extends \ControllerServiceProvider implements ControllerServiceProviderInterface
+class ServiceProvider extends \ServiceProvider implements ServiceProviderInterface
 {
     public function getCache()
     {
@@ -23,18 +23,9 @@ class ControllerServiceProvider extends \ControllerServiceProvider implements Co
         return $this->serviceLocator['users'];
     }
 
-    public function getArticles()
-    {
-        return $this->serviceLocator['articles'];
-    }
-
     public function getUploads()
     {
         return $this->serviceLocator['uploads'];
     }
 
-    public function getStatistics()
-    {
-        return $this->serviceLocator['statistics'];
-    }
 }

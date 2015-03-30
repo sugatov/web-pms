@@ -20,6 +20,9 @@ class Users extends RepositoryBasedService
         parent::__construct($objectManager, 'App:User');
     }
 
+    /**
+     * @return User
+     */
     public function getCurrentUser()
     {
         $IPaddr = $_SERVER['REMOTE_ADDR'];

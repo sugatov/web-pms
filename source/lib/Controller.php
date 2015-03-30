@@ -14,7 +14,7 @@ class Controller
      */
     protected $globalViewScope;
     /**
-     * @var ControllerServiceProviderInterface
+     * @var ServiceProviderInterface
      */
     protected $serviceProvider;
 
@@ -35,11 +35,11 @@ class Controller
     /**
      * @param Slim\Slim                             $application
      * @param array                                 $globalViewScope    Scope to share through all views
-     * @param ControllerServiceProviderInterface    $serviceProvider
+     * @param ServiceProviderInterface    $serviceProvider
      */
     public function __construct(Slim\Slim $application,
                                 $globalViewScope,
-                                ControllerServiceProviderInterface $serviceProvider)
+                                ServiceProviderInterface $serviceProvider)
     {
         $this->app             = $application;
         $this->globalViewScope = $globalViewScope;

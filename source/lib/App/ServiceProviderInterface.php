@@ -6,7 +6,7 @@ use MarkdownParser;
 use StorageInterface;
 use App\Services;
 
-interface ControllerServiceProviderInterface extends \ControllerServiceProviderInterface
+interface ServiceProviderInterface extends \ServiceProviderInterface
 {
     /**
      * @return CacheInterface
@@ -25,15 +25,7 @@ interface ControllerServiceProviderInterface extends \ControllerServiceProviderI
      */
     public function getUsers();
     /**
-     * @return Services\Articles
-     */
-    public function getArticles();
-    /**
      * @return Services\Uploads
      */
     public function getUploads();
-    /**
-     * @return Services\Statistics
-     */
-    public function getStatistics();
 }
