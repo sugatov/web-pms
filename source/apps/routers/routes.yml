@@ -1,0 +1,7 @@
+routes-get-url:
+    active: true
+    pattern: "/url/:name"
+    methods:
+        - "POST"
+    controller: "Routes"
+    action: "getURL"

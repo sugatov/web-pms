@@ -1,0 +1,20 @@
+App\Model\Entities\RoomCategory:
+    properties:
+        name:
+            expose: true
+            type: string
+            groups:
+                - "default"
+                - "name"
+        price:
+            expose: true
+            type: integer
+            groups:
+                - "default"
+                - "price"
+        designation:
+            expose: true
+            type: string
+            groups:
+                - "default"
+                - "designation"

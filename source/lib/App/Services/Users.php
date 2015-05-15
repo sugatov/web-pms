@@ -31,5 +31,5 @@ class Users extends RepositoryBasedService
             $IPaddr = $_SERVER['HTTP_X_FORWARDED_FOR'];
         }*/
         return $this->find($IPaddr);
-    }
+    }    
 }

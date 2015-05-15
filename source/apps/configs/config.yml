@@ -3,7 +3,7 @@ slim:
         - './slim.yml'
 
 app:
-    timezone: 'Europe/Moscow'
+    timezone: 'Europe/Minsk'
 
     debug: true
     sqlLog: true

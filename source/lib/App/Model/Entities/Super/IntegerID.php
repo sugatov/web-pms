@@ -1,15 +1,20 @@
 <?php
 namespace App\Model\Entities\Super;
 
+use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
+
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class IntegerID extends Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $id = null;
 

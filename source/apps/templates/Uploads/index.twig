@@ -16,7 +16,7 @@
         <h1>Список загруженных файлов</h1>
         
         {% use 'blocks/paginator.twig' %}
-        {% block paginator %}{{parent()}}{% endblock %}
+        {{ block('paginator') }}
 
         <div class="ui link items">
             {% for item in list %}
@@ -53,9 +53,8 @@
                 </div>
             {% endfor %}
         </div>
-        
-        {% use 'blocks/paginator.twig' %}
-        {% block paginator %}{{parent()}}{% endblock %}
+
+        {{ block('paginator') }}
         
     </div>
 

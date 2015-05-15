@@ -1,0 +1,29 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+# Make sure eth0 is working. This works around Vagrant issue #391
+dhclient eth0
+
+mount -t tmpfs /dev/shm /vagrant
+
+mkdir /vagrant/source
+mkdir /vagrant/source/data
+mkdir /vagrant/public_html
+chmod -R 777 /vagrant
+chown -R vagrant:vagrant /vagrant
+ln -s /storage/filestorage /vagrant/source/data/filestorage
+ln -s /storage/uploads /vagrant/public_html/uploads
+
+service lighttpd start
+
+exit 0

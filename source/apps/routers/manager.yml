@@ -1,0 +1,7 @@
+manager-index:
+    active: true
+    pattern: ""
+    methods:
+        - "GET"
+    controller: "Manager"
+    action: "index"

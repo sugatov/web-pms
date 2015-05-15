@@ -9,3 +9,4 @@
 /source/lib/composer.lock
 *.php~
 /source/lib/composer.phar
+/.vagrant

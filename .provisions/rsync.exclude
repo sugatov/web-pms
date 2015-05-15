@@ -1,0 +1,9 @@
+.git/
+source/lib/vendor/
+source/lib/composer.lock
+public_html/assets/bower_components/
+public_html/uploads/*
+source/data/filestorage/*
+source/data/cache/filecache/**
+source/data/cache/serializer/**
+source/data/cache/templates/**

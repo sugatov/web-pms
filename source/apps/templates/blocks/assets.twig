@@ -5,6 +5,9 @@
     {% for less in assets.less %}
         <link rel="stylesheet/less" type="text/css" href="{{less}}">
     {% endfor %}
+    {% if assets.requirejs %}
+        <script type="text/javascript" src="{{assets.requirejs.url}}" data-main="{{assets.requirejs.main}}" defer></script>
+    {% endif %}
     {% for js in assets.js %}
         <script type="text/javascript" src="{{js}}"></script>
     {% endfor %}

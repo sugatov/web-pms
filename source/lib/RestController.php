@@ -1,104 +1,205 @@
 <?php
-use Controller;
+use Slim\Slim;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
+use Opensoft\SimpleSerializer\Serializer;
 
 class RestController extends Controller
 {
-    private $allowClasses;
-    private $disallowClasses;
+    /**
+     * @var Slim
+     */
+    protected $application;
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+    /**
+     * @var Serializer
+     */
+    protected $serializer;
 
-    public function __construct()
+    public function __construct(Slim $application, ObjectManager $objectManager, Serializer $serializer, array $globalViewScope, ServiceProviderInterface $serviceProvider)
     {
-        parent::__construct();
-        $this->isJsonResponse();
-        $this->serializer->setGroups(array('default'));
-        $this->allowClasses = array();
-        $this->disallowClasses = array();
-    }
+        parent::__construct($application, $globalViewScope, $serviceProvider);
 
-    protected function setAllowedClasses($value)
-    {
-        $this->allowClasses = $value;
-    }
-
-    protected function allowClass($class)
-    {
-        if ( ! in_array($class, $this->allowClasses)) {
-            $this->allowClasses[] = $class;
-        }
-    }
-
-    protected function setDisallowedClasses($value)
-    {
-        $this->disallowClasses = $value;
-    }
-
-    protected function disallowClass($class)
-    {
-        if ( ! in_array($class, $this->disallowClasses)) {
-            $this->disallowClasses[] = $class;
-        }
+        $this->application = $application;
+        $this->objectManager = $objectManager;
+        $this->serializer = $serializer;
     }
 
     protected function getClass($class)
     {
-        $classname = $this->getService('factory')->getEntityClassname($class);
-        if ( ! empty($this->allowClasses)) {
-            if ( ! in_array($classname, $this->allowClasses)) {
-                throw new \Exception('Доступ к указанному типу сущности не разрешен!');
+        return 'App\\Model\\Entities\\' . $class;
+    }
+
+    protected function classExists($class)
+    {
+        if ( ! class_exists($class)) {
+            $errmsg = 'Entity class not found!';
+            $this->addError($errmsg);
+            $this->jsonResponse(null, 404, $errmsg);
+            return false;
+        }
+        return true;
+    }
+
+    protected function findBy($class, array $criteria, $limit = null, $offset = null, $orderBy = null, $desc = false)
+    {
+        if ($orderBy) {
+            $desc = (bool) $desc;
+            $order = $desc ? 'DESC' : 'ASC';
+            $orderBy = array($orderBy => $order);
+        }
+        if ($limit && ! is_numeric($limit) || $limit < 0) {
+            $limit = null;
+        }
+        if ($offset && ! is_numeric($offset) || $offset < 0) {
+            $offset = null;
+        }
+        return $this->objectManager->getRepository($class)
+                                   ->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    public function options()
+    {
+        $this->jsonResponse(null, 501);
+    }
+
+    public function cnt($class)
+    {
+        $class = $this->getClass($class);
+        $criteria = null;
+        if ($this->request()->isPost()) {
+            $criteria = $this->serializer->unserialize($this->getRawInput());
+        }
+        $cnt = null;
+        if ($this->objectManager instanceof EntityManager) {
+            /**
+             * @var EntityManager
+             */
+            $em = $this->objectManager;
+            $qb = $em->createQueryBuilder()
+                     ->select('COUNT(e)')
+                     ->from($class, 'e');
+            if ($criteria) {
+                foreach ($criteria as $property => $value) {
+                    $qb->andWhere('e.' . $property . ' = :' . $property)
+                       ->setParameter($property, $value);
+                }
+            }
+            $cnt = $qb->getQuery()->getSingleScalarResult();
+        } else {
+            $rep = $this->objectManager->getRepository($class);
+            if ($criteria) {
+                $cnt = count($rep->findBy($criteria));
+            } else {
+                $cnt = count($rep->findAll());
             }
         }
-        if ( ! empty($this->disallowClasses)) {
-            if (in_array($classname, $this->disallowClasses)) {
-                throw new \Exception('Доступ к указанному типу сущности запрещен!');
-            }
+        $this->jsonResponse($cnt, 200);
+    }
+
+    public function lst($class, $limit = null, $offset = null, $orderBy = null, $desc = false)
+    {
+        $class = $this->getClass($class);
+        if ($this->classExists($class)) {
+            $list = $this->findBy($class, array(), $limit, $offset, $orderBy, $desc);
+            $this->jsonResponse($list, 200);
         }
-        return $classname;
+    }
+
+    public function find($class, $limit = null, $offset = null, $orderBy = null, $desc = false)
+    {
+        $class = $this->getClass($class);
+        if ($this->classExists($class)) {
+            $criteria = $this->serializer->unserialize($this->getRawInput());
+            $list = $this->findBy($class, $criteria, $limit, $offset, $orderBy, $desc);
+            $this->jsonResponse($list, 200);
+        }
+    }
+
+    public function getNew($class)
+    {
+        $class = $this->getClass($class);
+        if ($this->classExists($class)) {
+            $entity = new $class();
+            $this->jsonResponse($entity, 200);
+        }
     }
 
     public function get($class, $id)
     {
         $class = $this->getClass($class);
-        $entity = $this->entityManager->find($class, $id);
-        if ( ! $entity) {
-            throw new \Exception('Сущность не найдена!');
+        if ($this->classExists($class)) {
+            $entity = $this->objectManager->find($class, $id);
+            if ( ! $entity) {
+                $errmsg = 'Entity not found!';
+                $this->addError($errmsg);
+                return $this->jsonResponse(null, 204, $errmsg);
+            }
+            $this->jsonResponse($entity, 200);
         }
-        $this->jsonResponse($entity);
+    }
+
+    public function post($class)
+    {
+        $class = $this->getClass($class);
+        if ($this->classExists($class)) {
+            $entity = new $class;
+            $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
+            $this->objectManager->persist($entity);
+            $this->objectManager->flush();
+            $this->jsonResponse($entity, 201);
+        }
     }
 
     // используется только для обновления
     public function put($class, $id)
     {
         $class = $this->getClass($class);
-        $entity = $this->entityManager->find($class, $id);
-        if ( ! $entity) {
-            throw new \Exception('Сущность не найдена!');
+        if ($this->classExists($class)) {
+            $entity = $this->objectManager->find($class, $id);
+            if ( ! $entity) {
+                $errmsg = 'Entity not found!';
+                $this->addError($errmsg);
+                return $this->jsonResponse(null, 204, $errmsg);
+            }
+            $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
+            $this->objectManager->flush();
+            $this->jsonResponse($entity, 200);
         }
-        $entity = $this->serializer->unserialize($this->jsonRequest(), $entity);
-        // $entity = $this->serializer->unserialize($this->jsonRequest(), $class);
-        // $this->entityManager->merge($entity);
-        $this->entityManager->flush();
-        $this->jsonResponse($entity);
-    }
-
-    public function post($class)
-    {
-        $class = $this->getClass($class);
-        $entity = new $class;
-        $entity = $this->serializer->unserialize($this->jsonRequest(), $entity);
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
-        $this->jsonResponse($entity);
     }
 
     public function delete($class, $id)
     {
         $class = $this->getClass($class);
-        $entity = $this->entityManager->find($class, $id);
-        if ( ! $entity) {
-            throw new \Exception('Сущность не найдена!');
+        if ($this->classExists($class)) {
+            $entity = $this->objectManager->find($class, $id);
+            if ( ! $entity) {
+                $errmsg = 'Entity not found!';
+                $this->addError($errmsg);
+                return $this->jsonResponse(null, 204, $errmsg);
+            }
+            $this->objectManager->remove($entity);
+            $this->objectManager->flush();
+            $this->jsonResponse($entity, 200);
         }
-        $this->entityManager->remove($entity);
-        $this->entityManager->flush();
-        $this->jsonResponse($entity);
+    }
+
+    public function patch($class, $id)
+    {
+        $class = $this->getClass($class);
+        if ($this->classExists($class)) {
+            $entity = $this->objectManager->find($class, $id);
+            if ( ! $entity) {
+                $errmsg = 'Entity not found!';
+                $this->addError($errmsg);
+                return $this->jsonResponse(null, 204, $errmsg);
+            }
+            $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
+            $this->objectManager->flush();
+            $this->jsonResponse($entity, 200);
+        }
     }
 }

@@ -9,9 +9,15 @@
   ],
   "dependencies": {
     "semantic-ui": "latest",
-    "knockoutjs": "latest",
+    "knockout": "latest",
     "knockout-es5": "latest",
     "knockout-mapping": "latest",
-    "less.js": ">= 2.0 < 2.2"
+    "knockout-jqueryui": "latest",
+    "less.js": ">= 2.0 < 2.2",
+    "requirejs": "latest",
+    "requirejs-text": "latest",
+    "modernizr": "latest",
+    "jquery": "latest",
+    "jquery-ui": "latest"
   }
 }

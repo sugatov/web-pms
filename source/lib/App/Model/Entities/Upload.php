@@ -1,11 +1,14 @@
 <?php
 namespace App\Model\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
+
 /**
- * @Entity(repositoryClass="\App\Model\Repositories\Uploads")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string", length=16)
- * @DiscriminatorMap({"Upload" = "Upload", "UploadImage" = "UploadImage"})
+ * @ORM\Entity(repositoryClass="\App\Model\Repositories\Uploads")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string", length=16)
+ * @ORM\DiscriminatorMap({"Upload" = "Upload", "UploadImage" = "UploadImage"})
  */
 class Upload extends Super\IntegerID
 {
@@ -28,22 +31,30 @@ class Upload extends Super\IntegerID
     }
 
     /**
-     * @Column(type="string", unique=true, nullable=false)
+     * @ORM\Column(type="string", unique=true, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $filename = null;
     
     /**
-     * @Column(type="string", unique=false, nullable=false)
+     * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $originalFilename = null;
     
     /**
-     * @Column(type="string", unique=false, nullable=false)
+     * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $mimeType = null;
     
     /**
-     * @Column(type="string", unique=false, nullable=true)
+     * @ORM\Column(type="string", unique=false, nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $tag = null;
 

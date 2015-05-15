@@ -87,7 +87,9 @@ return call_user_func(function () {
     };
 
     $SL['cache'] = function () use ($SL) {
-        return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
+        // return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
+        // return new \MemcacheCache('localhost');
+        return new \RedisCache();
     };
 
     $SL['storage'] = function () use ($SL) {
@@ -100,9 +102,49 @@ return call_user_func(function () {
 
     $SL['setTimezone'] = function () use ($SL) {
         date_default_timezone_set($SL['config']['app']['timezone']);
+        return true;
+    };
+
+    $SL['annotationReader'] = function () use ($SL) {
+        $SL['annotationReaderAutoloader'];
+        return new \Doctrine\Common\Annotations\AnnotationReader();
+    };
+
+    $SL['annotationReaderAutoloader'] = function () {
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+        return true;
     };
 
     $SL['serializer'] = function () use ($SL) {
+        $cacheDriver = null;
+        if ( ! $SL['config']['app']['debug']) {
+            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
+        }
+        return new OSS\Serializer(
+            new OSS\Adapter\MyArrayAdapter(
+                new OSS\Metadata\MetadataFactory(
+                    new OSS\Metadata\Driver\AnnotationDriver(
+                        $SL['annotationReader']
+                    ),
+                    $cacheDriver,
+                    $SL['config']['app']['debug']
+                )
+            ),
+            new OSS\Adapter\JsonAdapter()
+        );
+    };
+
+    $SL['serializer__'] = function () use ($SL) {
+        $builder = new JMS\Serializer\SerializerBuilder();
+        $serializer =
+            JMS\Serializer\SerializerBuilder::create()
+            // ->setCacheDir($someWritableDir)
+            ->setDebug(true)
+            ->build();
+        return $serializer;
+    };
+
+    $SL['serializer_'] = function () use ($SL) {
         $cacheDriver = null;
         if ( ! $SL['config']['app']['debug']) {
             $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
@@ -137,7 +179,10 @@ return call_user_func(function () {
 
         $configuration = ORM\Tools\Setup::createAnnotationMetadataConfiguration(
             array($SL['LOCAL_LIB'] . "/App/Model/Entities"),
-            $SL['config']['app']['debug']
+            $SL['config']['app']['debug'],
+            null,
+            null,
+            false
         );
 
         $configuration->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
@@ -148,6 +193,13 @@ return call_user_func(function () {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
         $configuration->addEntityNamespace('App', 'App\\Model\\Entities');
+
+        $SL['annotationReaderAutoloader'];
+        // \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+        /*\Doctrine\Common\Annotations\AnnotationRegistry::registerAutoloadNamespace(
+            'JMS\Serializer\Annotation',
+            __DIR__ . "/vendor/jms/serializer/src"
+        );*/
 
         $em = ORM\EntityManager::create(
             $SL['config']['app']['database']['config'],
@@ -248,6 +300,20 @@ return call_user_func(function () {
         }
         throw new \RuntimeException('Have no way to create a controller of this type!');
     });
+
+    $SL['controllers.Rest'] = function () use ($SL) {
+        return new RestController($SL['app'],
+                                  $SL['entityManager'],
+                                  $SL['serializer'],
+                                  $SL['globalViewScope'],
+                                  new \App\ServiceProvider($SL));
+    };
+
+    $SL['controllers.Routes'] = function () use ($SL) {
+        return new RoutesController($SL['app'],
+                                    $SL['globalViewScope'],
+                                    new \ServiceProvider($SL));
+    };
 
     $SL['markdownParser'] = function($SL) {
         return new \MarkdownParser();

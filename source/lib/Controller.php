@@ -1,7 +1,7 @@
 <?php
-use \ArrayAccess;
-use \Slim;
-
+use ArrayAccess;
+use Slim;
+use Opensoft\SimpleSerializer\Serializer;
 
 class Controller
 {
@@ -52,45 +52,68 @@ class Controller
         $this->app->error(array($this, 'errorHandler'));
     }
 
+    /**
+     * @return Slim\Slim
+     */
     protected function app()
     {
         return $this->app;
     }
 
+    /**
+     * @return Slim\Environment
+     */
     protected function environment()
     {
         return $this->app()->environment();
     }
-    
+
+    /**
+     * @return Slim\Router
+     */
     protected function router()
     {
         return $this->app()->router();
     }
 
+    /**
+     * @return Slim\Http\Request
+     */
     protected function request()
     {
         return $this->app()->request();
     }
 
+    /**
+     * @return Slim\Http\Response
+     */
     protected function response()
     {
         return $this->app()->response();
     }
 
+    /**
+     * @return Slim\View
+     */
     protected function view()
     {
         return $this->app()->view();
     }
 
+    /**
+     * @return ArrayAccess
+     */
     protected function session()
     {
         return $this->serviceProvider->getSession();
     }
 
+    /**
+     * @return Serializer
+     */
     protected function serializer()
     {
         $serializer = $this->serviceProvider->getSerializer();
-        $serializer->setGroups(array('default'));
         return $serializer;
     }
 
@@ -148,13 +171,15 @@ class Controller
 
     protected function getRawInput()
     {
-        return $this->environment()['slim.input'];
+        // return $this->environment()['slim.input'];
+        $env = $this->environment();
+        return $env['slim.input'];
     }
 
-    protected function jsonResponse($data, $status=0, $message=null)
+    protected function jsonResponse($data, $status = 200, $message = null)
     {
-        if ($status === 0 && count($this->errors) > 0) {
-            $status = -1;
+        if ($status === 200 && count($this->errors) > 0) {
+            $status = 500;
         }
         $response = array(
             'data'          => $data,
@@ -163,6 +188,7 @@ class Controller
             'errors'        => $this->errors
         );
         $this->app()->contentType('application/json;charset=utf-8');
+        $this->response()->setStatus($status);
         $this->response()->setBody($this->serializer()->serialize($response));
     }
 

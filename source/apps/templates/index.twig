@@ -1,7 +1,16 @@
 {% extends 'template.twig' %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Панель управления{% endblock %}
 
 {% block body %}
-    
+    <h1 class="ui header">Header</h1>
+
+    {% verbatim %}
+        <!--div data-bind="dialog: {width: 800}"-->
+            <datagrid params="dataSource: source, perPage: 3, onSelect: log"></datagrid>
+            
+        <!--/div-->
+        
+    {% endverbatim %}
+
 {% endblock %}
