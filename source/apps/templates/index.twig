@@ -10,7 +10,16 @@
             <datagrid params="dataSource: source, perPage: 3, onSelect: log"></datagrid>
             
         <!--/div-->
+
+        <!--confirmation-dialog params="message: 'Hello'"></confirmation-dialog-->
         
+        <!--ko if: showDialog-->
+            <div data-bind="dialog:{title: 'selector', close: dlgHide}">
+                <datagrid params="dataSource: source, perPage: 10"></datagrid>
+            </div>
+        <!--/ko-->
+        <button data-bind="click: dlgShow">dialog+</button>
+        <button data-bind="click: dlgHide">dialog-</button>
     {% endverbatim %}
 
 {% endblock %}

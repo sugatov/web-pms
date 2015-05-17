@@ -3,42 +3,51 @@ define(['knockout-es5', 'text!./view.html', '../gridview/model', '../paginator/m
         viewModel: function (params) {
             var self                = this;
             this.dataSource         = params.dataSource;
-            this.items              = [];
-            this.columns            = params.dataSource.columns;
             this.page               = 1;
             this.paginatorPage      = 1;
-            this.pageCount          = 1;
             this.perPage            = params.perPage;
             this.onSelectCallback   = params.onSelect;
+            this.selectedId         = null;
 
-            this.dataSource.count({}, function (cnt) {
-                self.pageCount = Math.ceil(cnt / self.perPage);
+            ko.defineProperty(this, 'pageCount', function () {
+                return Math.ceil(this.dataSource.count / this.perPage);
             });
-            this.dataSource.list(function (list) {
-                self.items = list;
-            }, self.perPage);
             
-            ko.track(this, ['items', 'columns', 'page', 'pageCount']);
+            ko.track(this, ['page', 'selectedId'] );
+
+            ko.getObservable(this, 'page').subscribe(function (val) {
+                self.setPage(val);
+            });
+
+            this.setPage = function(page) {
+                self.dataSource.limit = self.perPage;
+                self.dataSource.offset = self.perPage * (page - 1);
+            };
 
             this.pageChange = function (val) {
                 self.page = val;
+                self.selectedId = null;
             };
 
             this.onSelect = function (val) {
+                self.selectedId = val[self.dataSource.primaryKey];
                 if (typeof self.onSelectCallback === 'function') {
                     self.onSelectCallback(val);
                 }
             }
 
-            this.search = function (criteria) {
-                console.log(criteria);
+            this.deleteObject = function () {
+                if (self.selectedId !== null && confirm('Вы уверены в том, что хотите удалить выбранный объект?')) {
+                    self.dataSource.delete(self.selectedId);
+                }
             };
 
-            ko.getObservable(self, 'page').subscribe(function (val) {
-                self.dataSource.list(function (list) {
-                    self.items = list;
-                }, self.perPage, self.perPage * (val-1));
-            });
+            this.search = function (criteria) {
+                self.dataSource.filter = criteria;
+                self.selectedId = null;
+            };
+            
+            this.setPage(1);
         },
         template: tpl
     });

@@ -1,8 +1,4 @@
 <div class="ui top attached tiny icon buttons">
-        <div class="ui blue labeled icon button">
-            <i class="search icon"></i>
-            поиск
-        </div>
         <div class="ui teal labeled icon button">
             <i class="plus icon"></i>
             добавить
@@ -11,10 +7,13 @@
             <i class="write icon"></i>
             править
         </div>
-        <div class="ui red right labeled icon button">
+        <div class="ui red right labeled icon button" data-bind="click: deleteObject, css: {disabled: selectedId === null}">
             <i class="remove icon"></i>
             удалить
         </div>
 </div>
-<gridview params="items: items, columns: columns, onSelect: onSelect, search: search"></gridview>
+<gridview params="items: dataSource.items, columns: dataSource.columns, onSelect: onSelect, search: search"></gridview>
+<!--ko if: dataSource.isUpdating-->
+    <div class="ui active loader"></div>
+<!--/ko-->
 <paginator params="page: paginatorPage, count: pageCount, onChange: pageChange"></paginator>

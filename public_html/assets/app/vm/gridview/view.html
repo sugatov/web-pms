@@ -4,15 +4,20 @@
             <th>
                 <div data-bind="text: $data.displayName"></div>
                 <!--ko if: $parent.haveSearch-->
-                    <div class="ui fluid transparent small input">
-                        <input type="text" data-bind="attr: {placeholder: 'поиск по ' + $data.displayName + '...'}">
-                    </div>
+                    <!--ko component: {
+                        name: 'search-criterion',
+                        params: {
+                            column: $data,
+                            onChange: $parent.criterionChange
+                        }
+                    }-->
+                    <!--/ko-->
                 <!--/ko-->
             </th>
         </tr>
     </thead>
     <tbody data-bind="foreach: {data: items, as: 'item'}">
-        <tr data-bind="foreach: {data: $parent.columns, as: 'column'}, click: $parent.selectItem">
+        <tr data-bind="foreach: {data: $parent.columns, as: 'column'}, click: $parent.selectItem, css: {active: $parent.selectedId == item.id}">
             <td data-bind="text: item[column.name]">
             </td>
         </tr>

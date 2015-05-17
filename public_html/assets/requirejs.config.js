@@ -11,7 +11,9 @@ require.config({
         "less": "bower_components/less.js/dist/less",
         "modernizr": "bower_components/modernizr/modernizr",
         "requirejs": "bower_components/requirejs/require",
-        "semantic-ui": "bower_components/semantic-ui/dist/semantic"
+        "semantic-ui": "bower_components/semantic-ui/dist/semantic",
+        "lodash": "bower_components/lodash",
+        "node-uuid": "bower_components/node-uuid/uuid"
     },
     shim: {
         'semantic-ui': {

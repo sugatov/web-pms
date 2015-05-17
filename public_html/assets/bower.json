@@ -18,6 +18,8 @@
     "requirejs-text": "latest",
     "modernizr": "latest",
     "jquery": "latest",
-    "jquery-ui": "latest"
+    "jquery-ui": "latest",
+    "lodash": "3.8.0-amd",
+    "node-uuid": "latest"
   }
 }
