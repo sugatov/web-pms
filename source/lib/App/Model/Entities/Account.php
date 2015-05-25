@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -15,12 +14,12 @@ class Account extends Super\IntegerID
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $customer;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Payment", mappedBy="account")
      */
     private $payments;
-    
+
     /**
      * Constructor
      */
@@ -45,7 +44,7 @@ class Account extends Super\IntegerID
     /**
      * Get customer
      *
-     * @return \App\Model\Entities\Customer 
+     * @return \App\Model\Entities\Customer
      */
     public function getCustomer()
     {
@@ -78,7 +77,7 @@ class Account extends Super\IntegerID
     /**
      * Get payments
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPayments()
     {

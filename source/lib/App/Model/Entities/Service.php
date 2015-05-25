@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -26,32 +25,24 @@ class Service extends Super\IntegerID
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $created;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $updated;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $comment = '';
-    
+
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("integer")
      */
     private $price;
-    
+
 
     /**
      * Set created
@@ -69,7 +60,7 @@ class Service extends Super\IntegerID
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -92,7 +83,7 @@ class Service extends Super\IntegerID
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {
@@ -115,7 +106,7 @@ class Service extends Super\IntegerID
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
     public function getComment()
     {
@@ -138,7 +129,7 @@ class Service extends Super\IntegerID
     /**
      * Get price
      *
-     * @return integer 
+     * @return integer
      */
     public function getPrice()
     {
@@ -161,7 +152,7 @@ class Service extends Super\IntegerID
     /**
      * Get invoice
      *
-     * @return \App\Model\Entities\Invoice 
+     * @return \App\Model\Entities\Invoice
      */
     public function getInvoice()
     {

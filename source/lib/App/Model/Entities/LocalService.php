@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -15,7 +14,7 @@ class LocalService extends Service
      * @ORM\JoinColumn(referencedColumnName="id", name="LocalService_type", nullable=false)
      */
     private $type;
-    
+
 
     /**
      * Set type
@@ -33,7 +32,7 @@ class LocalService extends Service
     /**
      * Get type
      *
-     * @return \App\Model\Entities\LocalServiceType 
+     * @return \App\Model\Entities\LocalServiceType
      */
     public function getType()
     {

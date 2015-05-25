@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -19,32 +18,24 @@ class User extends Super\StringID
 {
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(false)
-     * @Serializer\Type("DateTime")
      */
     private $created;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(false)
-     * @Serializer\Type("string")
      */
     private $password;
-    
+
     /**
      * @ORM\Column(type="date", nullable=true)
-     * @Serializer\Expose(false)
-     * @Serializer\Type("DateTime")
      */
     private $birthday;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=true)
-     * @Serializer\Expose(false)
-     * @Serializer\Type("string")
      */
     private $fullname;
-    
+
 
     /**
      * Set created
@@ -62,7 +53,7 @@ class User extends Super\StringID
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -85,7 +76,7 @@ class User extends Super\StringID
     /**
      * Get password
      *
-     * @return string 
+     * @return string
      */
     public function getPassword()
     {
@@ -108,7 +99,7 @@ class User extends Super\StringID
     /**
      * Get birthday
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getBirthday()
     {
@@ -131,7 +122,7 @@ class User extends Super\StringID
     /**
      * Get fullname
      *
-     * @return string 
+     * @return string
      */
     public function getFullname()
     {

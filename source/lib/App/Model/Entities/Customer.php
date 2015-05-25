@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,8 +11,6 @@ class Customer extends User
 {
     /**
      * @ORM\Column(type="string", name="Customer_email", unique=true, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $email;
 
@@ -21,7 +18,7 @@ class Customer extends User
      * @ORM\OneToOne(targetEntity="Account", mappedBy="customer")
      */
     private $account;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Check", mappedBy="customer")
      */
@@ -29,11 +26,9 @@ class Customer extends User
 
     /**
      * @ORM\Column(type="text", name="Customer_comment", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $comment = '';
-    
+
     /**
      * Constructor
      */
@@ -58,7 +53,7 @@ class Customer extends User
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -81,7 +76,7 @@ class Customer extends User
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
     public function getComment()
     {
@@ -104,7 +99,7 @@ class Customer extends User
     /**
      * Get account
      *
-     * @return \App\Model\Entities\Account 
+     * @return \App\Model\Entities\Account
      */
     public function getAccount()
     {
@@ -137,7 +132,7 @@ class Customer extends User
     /**
      * Get checks
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getChecks()
     {

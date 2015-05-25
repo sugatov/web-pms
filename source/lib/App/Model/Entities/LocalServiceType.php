@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,39 +11,29 @@ class LocalServiceType extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $name;
-    
+
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("integer")
      */
     private $price;
-    
+
     /**
      * @ORM\Column(type="boolean", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("boolean")
      */
     private $isAvailable = true;
-    
+
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $created;
-    
+
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $updated;
-    
+
 
     /**
      * Set name
@@ -62,7 +51,7 @@ class LocalServiceType extends Super\IntegerID
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -85,7 +74,7 @@ class LocalServiceType extends Super\IntegerID
     /**
      * Get price
      *
-     * @return integer 
+     * @return integer
      */
     public function getPrice()
     {
@@ -108,7 +97,7 @@ class LocalServiceType extends Super\IntegerID
     /**
      * Get isAvailable
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsAvailable()
     {
@@ -131,7 +120,7 @@ class LocalServiceType extends Super\IntegerID
     /**
      * Get created
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -154,7 +143,7 @@ class LocalServiceType extends Super\IntegerID
     /**
      * Get updated
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdated()
     {

@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,8 +11,6 @@ class Employee extends User
 {
     /**
      * @ORM\Column(type="boolean", name="Employee_isFired", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("boolean")
      */
     private $isFired = false;
 
@@ -21,7 +18,7 @@ class Employee extends User
      * @ORM\OneToMany(targetEntity="Role", mappedBy="employee")
      */
     private $roles;
-    
+
     /**
      * Constructor
      */
@@ -46,7 +43,7 @@ class Employee extends User
     /**
      * Get isFired
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsFired()
     {
@@ -79,7 +76,7 @@ class Employee extends User
     /**
      * Get roles
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRoles()
     {

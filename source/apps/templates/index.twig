@@ -3,23 +3,27 @@
 {% block title %}Панель управления{% endblock %}
 
 {% block body %}
-    <h1 class="ui header">Header</h1>
-
+<div id="application">
     {% verbatim %}
-        <!--div data-bind="dialog: {width: 800}"-->
-            <datagrid params="dataSource: source, perPage: 3, onSelect: log"></datagrid>
-            
-        <!--/div-->
 
-        <!--confirmation-dialog params="message: 'Hello'"></confirmation-dialog-->
-        
-        <!--ko if: showDialog-->
-            <div data-bind="dialog:{title: 'selector', close: dlgHide}">
-                <datagrid params="dataSource: source, perPage: 10"></datagrid>
+        <h3 class="ui header">Состояние</h3>
+        <i class="ui huge red bug icon"></i>
+        <p>"Шахматка" в разработке.</p>
+
+        <!--ko if: roomCategories-->
+            <div data-bind="dialog: {title: 'Категории номеров', close: hideRoomCategories, width: 600, height: 600}">
+                <room-categories></room-categories>
             </div>
         <!--/ko-->
-        <button data-bind="click: dlgShow">dialog+</button>
-        <button data-bind="click: dlgHide">dialog-</button>
+        <!--ko if: rooms-->
+            <div data-bind="dialog: {title: 'Номеры', close: hideRooms, width: 600, height: 600}">
+                <rooms></rooms>
+            </div>
+        <!--/ko-->
+
+        <gridview params="items: list, columns: columns, search: log"></gridview>
+
     {% endverbatim %}
+</div>
 
 {% endblock %}

@@ -2,47 +2,38 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
  */
-class RussianPasport extends Document
+class RussianPassport extends Document
 {
     /**
-     * @ORM\Column(type="string", name="RussianPasport_serial", length=4, unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
+     * @ORM\Column(type="string", name="RussianPassport_serial", length=4, unique=false, nullable=false)
      */
     private $serial;
-    
+
     /**
-     * @ORM\Column(type="string", name="RussianPasport_number", length=6, unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
+     * @ORM\Column(type="string", name="RussianPassport_number", length=6, unique=false, nullable=false)
      */
     private $number;
-    
+
     /**
-     * @ORM\Column(type="string", name="RussianPasport_issuedBy", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
+     * @ORM\Column(type="string", name="RussianPassport_issuedBy", unique=false, nullable=false)
      */
     private $issuedBy;
-    
+
     /**
-     * @ORM\Column(type="date", name="RussianPasport_issueDate", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
+     * @ORM\Column(type="date", name="RussianPassport_issueDate", nullable=false)
      */
     private $issueDate;
-    
+
 
     /**
      * Set serial
      *
      * @param string $serial
-     * @return RussianPasport
+     * @return RussianPassport
      */
     public function setSerial($serial)
     {
@@ -54,7 +45,7 @@ class RussianPasport extends Document
     /**
      * Get serial
      *
-     * @return string 
+     * @return string
      */
     public function getSerial()
     {
@@ -65,7 +56,7 @@ class RussianPasport extends Document
      * Set number
      *
      * @param string $number
-     * @return RussianPasport
+     * @return RussianPassport
      */
     public function setNumber($number)
     {
@@ -77,7 +68,7 @@ class RussianPasport extends Document
     /**
      * Get number
      *
-     * @return string 
+     * @return string
      */
     public function getNumber()
     {
@@ -88,7 +79,7 @@ class RussianPasport extends Document
      * Set issuedBy
      *
      * @param string $issuedBy
-     * @return RussianPasport
+     * @return RussianPassport
      */
     public function setIssuedBy($issuedBy)
     {
@@ -100,7 +91,7 @@ class RussianPasport extends Document
     /**
      * Get issuedBy
      *
-     * @return string 
+     * @return string
      */
     public function getIssuedBy()
     {
@@ -111,7 +102,7 @@ class RussianPasport extends Document
      * Set issueDate
      *
      * @param \DateTime $issueDate
-     * @return RussianPasport
+     * @return RussianPassport
      */
     public function setIssueDate($issueDate)
     {
@@ -123,7 +114,7 @@ class RussianPasport extends Document
     /**
      * Get issueDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getIssueDate()
     {

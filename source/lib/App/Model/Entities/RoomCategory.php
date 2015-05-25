@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,30 +11,24 @@ class RoomCategory extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=true, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("integer")
      */
     private $price;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $designation;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Room", mappedBy="roomCategory")
      */
     private $rooms;
-    
+
     /**
      * Constructor
      */
@@ -60,7 +53,7 @@ class RoomCategory extends Super\IntegerID
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -83,7 +76,7 @@ class RoomCategory extends Super\IntegerID
     /**
      * Get price
      *
-     * @return integer 
+     * @return integer
      */
     public function getPrice()
     {
@@ -106,7 +99,7 @@ class RoomCategory extends Super\IntegerID
     /**
      * Get designation
      *
-     * @return string 
+     * @return string
      */
     public function getDesignation()
     {
@@ -139,7 +132,7 @@ class RoomCategory extends Super\IntegerID
     /**
      * Get rooms
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getRooms()
     {

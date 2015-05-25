@@ -19,10 +19,13 @@ use Opensoft\SimpleSerializer\Metadata\PropertyMetadata;
 use Opensoft\SimpleSerializer\Exclusion\ExclusionStrategyInterface;
 use Opensoft\SimpleSerializer\Exclusion\PropertySkipper;
 use DateTime;
+use Opensoft\SimpleSerializer\Metadata\MyPropertyMetadata;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 
 /**
  * @author Dmitry Petrov <dmitry.petrov@opensoftdev.ru>
+ * @author Evgeny Sugatov
  */
 class MyArrayAdapter implements BaseArrayAdapter
 {
@@ -48,14 +51,20 @@ class MyArrayAdapter implements BaseArrayAdapter
     private $unserializeMode;
 
     /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @param MetadataFactory $metadataFactory
      * @param int $unserializeMode
      */
-    public function __construct(MetadataFactory $metadataFactory, $unserializeMode = self::NON_STRICT_MODE)
+    public function __construct(MetadataFactory $metadataFactory, EntityManager $entityManager, $unserializeMode = self::NON_STRICT_MODE)
     {
         $this->metadataFactory = $metadataFactory;
         $this->propertySkipper = new PropertySkipper();
         $this->setUnserializeMode($unserializeMode);
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -258,6 +267,13 @@ class MyArrayAdapter implements BaseArrayAdapter
                         throw new InvalidArgumentException(sprintf('Invalid DateTime argument "%s"', $originalValue));
                     }
                 }
+            } elseif (strpos($type, 'relation') === 0 && preg_match('/relation<(?<type>[a-zA-Z\\\]+)>/', $type, $matches)) {
+                $entityClassName = $matches['type'];
+                if ($direct == self::DIRECTION_SERIALIZE && is_object($value)) {
+                    $value = $value->getId();
+                } elseif ($direct == self::DIRECTION_UNSERIALIZE && $value !== null) {
+                    $value = $this->entityManager->getReference($entityClassName, $value);
+                }
             } elseif ($type === 'array' || ($type[0] === 'a' && strpos($type, 'array<') === 0)) {
                 $tmpResult = array();
                 $tmpType = new PropertyMetadata($property->getName());
@@ -311,7 +327,9 @@ class MyArrayAdapter implements BaseArrayAdapter
                 if ($inner) {
                     $innerObject = $object;
                 } else {
-                    $innerObject = $this->exposeValue($object, $property);
+                    if ( ! $property instanceof MyPropertyMetadata || ! $property->isReplace()) {
+                        $innerObject = $this->exposeValue($object, $property);
+                    }
                 }
                 if (!is_object($innerObject) || !$innerObject instanceof $type) {
                     if (PHP_VERSION_ID >= 50400) {

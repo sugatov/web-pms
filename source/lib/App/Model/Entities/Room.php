@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,43 +11,21 @@ class Room extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=true, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $name;
 
     /**
      * @ORM\Column(type="boolean", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("boolean")
      */
     private $isAvailable = true;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="RoomCategory")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $roomCategory;
 
-    /**
-     * @ORM\Column(type="integer", name="roomCategory_id")
-     * @Serializer\Expose(true)
-     * @Serializer\Type("integer")
-     */
-    private $roomCategory_id;
 
-    public function getRoomCategory_id()
-    {
-        return $this->roomCategory_id;
-    }
-
-    public function setRoomCategory_id($value)
-    {
-        $this->roomCategory_id = $value;
-        return $this;
-    }
-    
-    
 
     /**
      * Set name
@@ -66,7 +43,7 @@ class Room extends Super\IntegerID
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -89,7 +66,7 @@ class Room extends Super\IntegerID
     /**
      * Get isAvailable
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsAvailable()
     {
@@ -112,7 +89,7 @@ class Room extends Super\IntegerID
     /**
      * Get roomCategory
      *
-     * @return \App\Model\Entities\RoomCategory 
+     * @return \App\Model\Entities\RoomCategory
      */
     public function getRoomCategory()
     {

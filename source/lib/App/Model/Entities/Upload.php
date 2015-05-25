@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="\App\Model\Repositories\Uploads")
@@ -32,29 +31,21 @@ class Upload extends Super\IntegerID
 
     /**
      * @ORM\Column(type="string", unique=true, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $filename = null;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $originalFilename = null;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $mimeType = null;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=true)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $tag = null;
 
@@ -74,7 +65,7 @@ class Upload extends Super\IntegerID
     /**
      * Get filename
      *
-     * @return string 
+     * @return string
      */
     public function getFilename()
     {
@@ -97,7 +88,7 @@ class Upload extends Super\IntegerID
     /**
      * Get originalFilename
      *
-     * @return string 
+     * @return string
      */
     public function getOriginalFilename()
     {
@@ -120,7 +111,7 @@ class Upload extends Super\IntegerID
     /**
      * Get mimeType
      *
-     * @return string 
+     * @return string
      */
     public function getMimeType()
     {
@@ -143,7 +134,7 @@ class Upload extends Super\IntegerID
     /**
      * Get tag
      *
-     * @return string 
+     * @return string
      */
     public function getTag()
     {

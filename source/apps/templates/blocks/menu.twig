@@ -3,7 +3,7 @@
         <div class="link item" href="#" onclick="window.history.back()">
             <i class="arrow left icon"></i>
         </div>
-        <a class="item" href="/">
+        <a class="item" href="/#">
             <i class="home icon"></i>
         </a>
         {% block menuitems %}
@@ -22,7 +22,10 @@
                 Справочники
                 <i class="dropdown icon"></i>
                 <div class="menu">
-                    <a class="item">
+                    <a class="item" data-bind="click: showRoomCategories">
+                        Категории номеров
+                    </a>
+                    <a class="item" data-bind="click: showRooms">
                         Номерной фонд
                     </a>
                     <a class="item">

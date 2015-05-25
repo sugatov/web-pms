@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -18,16 +17,14 @@ class Invoice extends Super\IntegerID
 
     /**
      * @ORM\Column(type="boolean", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("boolean")
      */
     private $isClosed = false;
-    
+
     /**
      * @ORM\OneToOne(targetEntity="Payment",mappedBy="invoice")
      */
     private $payment;
-    
+
 
     /**
      * Set isClosed
@@ -45,7 +42,7 @@ class Invoice extends Super\IntegerID
     /**
      * Get isClosed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsClosed()
     {
@@ -68,7 +65,7 @@ class Invoice extends Super\IntegerID
     /**
      * Get check
      *
-     * @return \App\Model\Entities\Check 
+     * @return \App\Model\Entities\Check
      */
     public function getCheck()
     {
@@ -91,7 +88,7 @@ class Invoice extends Super\IntegerID
     /**
      * Get payment
      *
-     * @return \App\Model\Entities\Payment 
+     * @return \App\Model\Entities\Payment
      */
     public function getPayment()
     {

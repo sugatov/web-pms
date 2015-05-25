@@ -8,7 +8,7 @@ use Doctrine\StdErrSQLLogger;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
-    
+
     $SL = new Pimple();
 
     $SL['URL'] = function () {
@@ -128,7 +128,8 @@ return call_user_func(function () {
                     ),
                     $cacheDriver,
                     $SL['config']['app']['debug']
-                )
+                ),
+                $SL['entityManager']
             ),
             new OSS\Adapter\JsonAdapter()
         );
@@ -188,7 +189,7 @@ return call_user_func(function () {
         $configuration->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $configuration->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $configuration->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-        
+
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
@@ -206,7 +207,7 @@ return call_user_func(function () {
             $configuration,
             $eventManager
         );
-        
+
         Type::addType('kdate', 'Doctrine\Types\KDateType');
 
         $platform = $em->getConnection()->getDatabasePlatform();
@@ -214,7 +215,7 @@ return call_user_func(function () {
         $platform->markDoctrineTypeCommented(Type::getType('date'));
         $platform->markDoctrineTypeCommented(Type::getType('datetime'));
         $platform->markDoctrineTypeCommented(Type::getType('datetimetz'));
-               
+
         return $em;
     };
 
@@ -305,6 +306,7 @@ return call_user_func(function () {
         return new RestController($SL['app'],
                                   $SL['entityManager'],
                                   $SL['serializer'],
+                                  $SL['annotationReader'],
                                   $SL['globalViewScope'],
                                   new \App\ServiceProvider($SL));
     };

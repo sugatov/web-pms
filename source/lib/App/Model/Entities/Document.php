@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -10,32 +9,28 @@ use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
  * @ORM\DiscriminatorColumn(name="type", type="string", length=16)
  * @ORM\DiscriminatorMap({
  *     "Document" = "Document",
- *     "RussianPasport" = "RussianPasport"
+ *     "RussianPassport" = "RussianPassport"
  * })
- * 
+ *
  */
 class Document extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $name;
-    
+
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $data = '';
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="Customer")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $customer;
-    
+
 
     /**
      * Set name
@@ -53,7 +48,7 @@ class Document extends Super\IntegerID
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -76,7 +71,7 @@ class Document extends Super\IntegerID
     /**
      * Get data
      *
-     * @return string 
+     * @return string
      */
     public function getData()
     {
@@ -99,7 +94,7 @@ class Document extends Super\IntegerID
     /**
      * Get customer
      *
-     * @return \App\Model\Entities\Customer 
+     * @return \App\Model\Entities\Customer
      */
     public function getCustomer()
     {

@@ -2,7 +2,8 @@
 namespace Opensoft\SimpleSerializer\Metadata\Driver;
 
 use Opensoft\SimpleSerializer\Metadata\Driver\DriverInterface;
-use Opensoft\SimpleSerializer\Metadata\PropertyMetadata;
+// use Opensoft\SimpleSerializer\Metadata\PropertyMetadata;
+use Opensoft\SimpleSerializer\Metadata\MyPropertyMetadata as PropertyMetadata;
 use Opensoft\SimpleSerializer\Metadata\ClassMetadata;
 use Opensoft\SimpleSerializer\Exception\RuntimeException;
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -32,6 +33,9 @@ class AnnotationDriver implements DriverInterface
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Annotations\Expose) {
                     $pMetadata->setExpose((bool) $annotation->value);
+                }
+                if ($annotation instanceof Annotations\Replace) {
+                    $pMetadata->setReplace(true);
                 }
                 if ($annotation instanceof Annotations\Type) {
                     $pMetadata->setType((string) $annotation->value);

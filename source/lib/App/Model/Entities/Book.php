@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -12,22 +11,16 @@ class Book extends Service
 {
     /**
      * @ORM\Column(type="date", name="Book_firstDay", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $firstDay;
 
     /**
      * @ORM\Column(type="date", name="Book_lastDay", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $lastDay;
 
     /**
      * @ORM\Column(type="boolean", name="Book_isConfirmed", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("boolean")
      */
     private $isConfirmed = false;
 
@@ -54,7 +47,7 @@ class Book extends Service
     /**
      * Get firstDay
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getFirstDay()
     {
@@ -77,7 +70,7 @@ class Book extends Service
     /**
      * Get lastDay
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastDay()
     {
@@ -100,7 +93,7 @@ class Book extends Service
     /**
      * Get isConfirmed
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsConfirmed()
     {
@@ -123,7 +116,7 @@ class Book extends Service
     /**
      * Get room
      *
-     * @return \App\Model\Entities\Room 
+     * @return \App\Model\Entities\Room
      */
     public function getRoom()
     {

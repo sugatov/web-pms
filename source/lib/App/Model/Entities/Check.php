@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -15,33 +14,27 @@ class Check extends Super\IntegerID
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $customer;
-    
+
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $checkInDate;
-    
+
     /**
      * @ORM\Column(type="datetime", nullable=true)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $checkOutDate;
 
     /**
      * @ORM\Column(type="text", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $comment = '';
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Invoice", mappedBy="check")
      */
     private $invoices;
-    
+
     /**
      * Constructor
      */
@@ -66,7 +59,7 @@ class Check extends Super\IntegerID
     /**
      * Get checkInDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCheckInDate()
     {
@@ -89,7 +82,7 @@ class Check extends Super\IntegerID
     /**
      * Get checkOutDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCheckOutDate()
     {
@@ -112,7 +105,7 @@ class Check extends Super\IntegerID
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
     public function getComment()
     {
@@ -135,7 +128,7 @@ class Check extends Super\IntegerID
     /**
      * Get customer
      *
-     * @return \App\Model\Entities\Customer 
+     * @return \App\Model\Entities\Customer
      */
     public function getCustomer()
     {
@@ -168,7 +161,7 @@ class Check extends Super\IntegerID
     /**
      * Get invoices
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getInvoices()
     {

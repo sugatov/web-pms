@@ -2,6 +2,7 @@
 use Slim\Slim;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Opensoft\SimpleSerializer\Serializer;
 
 class RestController extends Controller
@@ -18,19 +19,52 @@ class RestController extends Controller
      * @var Serializer
      */
     protected $serializer;
+    /**
+     * @var AnnotationReader
+     */
+    protected $annotationReader;
 
-    public function __construct(Slim $application, ObjectManager $objectManager, Serializer $serializer, array $globalViewScope, ServiceProviderInterface $serviceProvider)
+    public function __construct(Slim $application, ObjectManager $objectManager, Serializer $serializer, AnnotationReader $annotationReader, array $globalViewScope, ServiceProviderInterface $serviceProvider)
     {
         parent::__construct($application, $globalViewScope, $serviceProvider);
 
-        $this->application = $application;
-        $this->objectManager = $objectManager;
-        $this->serializer = $serializer;
+        $this->application      = $application;
+        $this->objectManager    = $objectManager;
+        $this->serializer       = $serializer;
+        $this->annotationReader = $annotationReader;
     }
 
     protected function getClass($class)
     {
         return 'App\\Model\\Entities\\' . $class;
+    }
+
+    protected function getDTOClass($class)
+    {
+        return 'App\\Model\\DTO\\' . $class;
+    }
+
+    protected function haveDTO($class)
+    {
+        return class_exists($this->getDTOClass($class));
+    }
+
+    protected function makeDTO($class, $set) {
+        if ( ! $this->haveDTO($class)) {
+            return $set;
+        }
+        $fqcn = $this->getDTOClass($class);
+        if (($set instanceof \ArrayAccess) || is_array($set)) {
+            foreach ($set as &$obj) {
+                // $obj = new $fqcn($obj, $this->objectManager);
+                $obj = new $fqcn($obj, $this->objectManager, $this->annotationReader);
+                unset($obj);
+            }
+        } else {
+            // $set = new $fqcn($set, $this->objectManager);
+            $set = new $fqcn($set, $this->objectManager, $this->annotationReader);
+        }
+        return $set;
     }
 
     protected function classExists($class)
@@ -68,7 +102,7 @@ class RestController extends Controller
 
     public function cnt($class)
     {
-        $class = $this->getClass($class);
+        $fqcn = $this->getClass($class);
         $criteria = null;
         if ($this->request()->isPost()) {
             $criteria = $this->serializer->unserialize($this->getRawInput());
@@ -81,7 +115,7 @@ class RestController extends Controller
             $em = $this->objectManager;
             $qb = $em->createQueryBuilder()
                      ->select('COUNT(e)')
-                     ->from($class, 'e');
+                     ->from($fqcn, 'e');
             if ($criteria) {
                 foreach ($criteria as $property => $value) {
                     $qb->andWhere('e.' . $property . ' = :' . $property)
@@ -90,7 +124,7 @@ class RestController extends Controller
             }
             $cnt = $qb->getQuery()->getSingleScalarResult();
         } else {
-            $rep = $this->objectManager->getRepository($class);
+            $rep = $this->objectManager->getRepository($fqcn);
             if ($criteria) {
                 $cnt = count($rep->findBy($criteria));
             } else {
@@ -102,53 +136,66 @@ class RestController extends Controller
 
     public function lst($class, $limit = null, $offset = null, $orderBy = null, $desc = false)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $list = $this->findBy($class, array(), $limit, $offset, $orderBy, $desc);
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $list = $this->findBy($fqcn, array(), $limit, $offset, $orderBy, $desc);
+            $list = $this->makeDTO($class, $list);
             $this->jsonResponse($list, 200);
         }
     }
 
     public function find($class, $limit = null, $offset = null, $orderBy = null, $desc = false)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
             $criteria = $this->serializer->unserialize($this->getRawInput());
-            $list = $this->findBy($class, $criteria, $limit, $offset, $orderBy, $desc);
+            $list = $this->findBy($fqcn, $criteria, $limit, $offset, $orderBy, $desc);
+            $list = $this->makeDTO($class, $list);
             $this->jsonResponse($list, 200);
         }
     }
 
     public function getNew($class)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = new $class();
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = new $fqcn();
+            $entity = $this->makeDTO($class, $entity);
             $this->jsonResponse($entity, 200);
         }
     }
 
     public function get($class, $id)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = $this->objectManager->find($class, $id);
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = $this->objectManager->find($fqcn, $id);
             if ( ! $entity) {
                 $errmsg = 'Entity not found!';
                 $this->addError($errmsg);
                 return $this->jsonResponse(null, 204, $errmsg);
             }
+            $entity = $this->makeDTO($class, $entity);
             $this->jsonResponse($entity, 200);
         }
     }
 
     public function post($class)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = new $class;
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = new $fqcn();
+            if ($this->haveDTO($class)) {
+                $dtofqcn = $this->getDTOClass($class);
+                // $entity = new $dtofqcn($entity, $this->objectManager);
+                $entity = new $dtofqcn($entity, $this->objectManager, $this->annotationReader);
+            }
             $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
-            $this->objectManager->persist($entity);
+            if ($this->haveDTO($class)) {
+                $this->objectManager->persist($entity->getEntity());
+            } else {
+                $this->objectManager->persist($entity);
+            }
             $this->objectManager->flush();
             $this->jsonResponse($entity, 201);
         }
@@ -157,14 +204,16 @@ class RestController extends Controller
     // используется только для обновления
     public function put($class, $id)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = $this->objectManager->find($class, $id);
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = $this->objectManager->find($fqcn, $id);
+            // $entity = $this->objectManager->getReference($fqcn, $id);
             if ( ! $entity) {
                 $errmsg = 'Entity not found!';
                 $this->addError($errmsg);
                 return $this->jsonResponse(null, 204, $errmsg);
             }
+            $entity = $this->makeDTO($class, $entity);
             $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
             $this->objectManager->flush();
             $this->jsonResponse($entity, 200);
@@ -173,9 +222,9 @@ class RestController extends Controller
 
     public function delete($class, $id)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = $this->objectManager->find($class, $id);
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = $this->objectManager->find($fqcn, $id);
             if ( ! $entity) {
                 $errmsg = 'Entity not found!';
                 $this->addError($errmsg);
@@ -183,20 +232,22 @@ class RestController extends Controller
             }
             $this->objectManager->remove($entity);
             $this->objectManager->flush();
+            $entity = $this->makeDTO($class, $entity);
             $this->jsonResponse($entity, 200);
         }
     }
 
     public function patch($class, $id)
     {
-        $class = $this->getClass($class);
-        if ($this->classExists($class)) {
-            $entity = $this->objectManager->find($class, $id);
+        $fqcn = $this->getClass($class);
+        if ($this->classExists($fqcn)) {
+            $entity = $this->objectManager->find($fqcn, $id);
             if ( ! $entity) {
                 $errmsg = 'Entity not found!';
                 $this->addError($errmsg);
                 return $this->jsonResponse(null, 204, $errmsg);
             }
+            $entity = $this->makeDTO($class, $entity);
             $entity = $this->serializer->unserialize($this->getRawInput(), $entity);
             $this->objectManager->flush();
             $this->jsonResponse($entity, 200);

@@ -2,7 +2,6 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
-use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use App\Model\Exceptions\ValidationException;
 
 /**
@@ -24,25 +23,19 @@ class Payment extends Super\IntegerID
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $account;
-    
+
     /**
      * @ORM\Column(type="datetime", nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("DateTime")
      */
     private $date;
-    
+
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("integer")
      */
     private $amount;
 
     /**
      * @ORM\Column(type="string", length=3, unique=false, nullable=false)
-     * @Serializer\Expose(true)
-     * @Serializer\Type("string")
      */
     private $currency = 'RUR';
 
@@ -51,7 +44,7 @@ class Payment extends Super\IntegerID
      * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
      */
     private $invoice;
-    
+
 
     /**
      * Set date
@@ -69,7 +62,7 @@ class Payment extends Super\IntegerID
     /**
      * Get date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -92,7 +85,7 @@ class Payment extends Super\IntegerID
     /**
      * Get amount
      *
-     * @return integer 
+     * @return integer
      */
     public function getAmount()
     {
@@ -115,7 +108,7 @@ class Payment extends Super\IntegerID
     /**
      * Get currency
      *
-     * @return string 
+     * @return string
      */
     public function getCurrency()
     {
@@ -138,7 +131,7 @@ class Payment extends Super\IntegerID
     /**
      * Get account
      *
-     * @return \App\Model\Entities\Account 
+     * @return \App\Model\Entities\Account
      */
     public function getAccount()
     {
@@ -161,7 +154,7 @@ class Payment extends Super\IntegerID
     /**
      * Get invoice
      *
-     * @return \App\Model\Entities\Invoice 
+     * @return \App\Model\Entities\Invoice
      */
     public function getInvoice()
     {
