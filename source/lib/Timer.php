@@ -8,7 +8,7 @@ class Timer
 	{
 		$this->start();
 	}
-	
+
 	public function start()
 	{
 		$this->starttime = microtime(true);
@@ -20,13 +20,14 @@ class Timer
 		$this->stoptime = microtime(true);
 		return $this->duration();
 	}
-	
+
 	public function duration()
 	{
 		if($this->stoptime > $this->starttime){
-			return $this->stoptime - $this->starttime;
+			$microtime = $this->stoptime - $this->starttime;
+			return round($microtime * 1000, 3) . ' ms';
 		} else {
-			return 0.0;
+			return '0.000 ms';
 		}
 	}
 }
