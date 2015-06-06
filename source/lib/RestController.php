@@ -175,7 +175,9 @@ class RestController extends Controller
                 $this->addError($errmsg);
                 return $this->jsonResponse(null, 204, $errmsg);
             }
-            $entity = $this->makeDTO($class, $entity);
+            // $entity = $this->makeDTO($class, $entity);
+            $dtoclass = $this->getDTOClass($class);
+            $entity = new $dtoclass($this->objectManager, $id);
             $this->jsonResponse($entity, 200);
         }
     }

@@ -6,27 +6,12 @@ use App\Model\Entities\Super\Entity;
 use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 use Doctrine\Common\Annotations\AnnotationReader;
 
+define('DTO_NULL', '__NULL__');
+
 class DTO
 {
     /**
-     * @var Entity
      * @Serializer\Expose(false)
-     */
-    protected $entity;
-
-    /**
-     * @var EntityManager
-     * @Serializer\Expose(false)
-     */
-    protected $entityManager;
-
-    /**
-     * @var AnnotationReader
-     */
-    protected $annotationReader;
-
-    /**
-     * @Serializer\Expose(true)
      * @Serializer\Type("string")
      */
     protected $class;
@@ -39,10 +24,39 @@ class DTO
         $this->class = $val;
     }
 
-
-    public function __construct(Entity $entity, EntityManager $entityManager, AnnotationReader $annotationReader)
+    protected function getEntityClass($class)
     {
-        $reflectionClass        = new \ReflectionClass($this);
+        return 'App\\Model\Entities\\' . $class;
+    }
+
+    /**
+     * @Serializer\Expose(false)
+     */
+    protected $entity = null;
+
+    /**
+     * @Serializer\Expose(false)
+     * @var EntityManager
+     */
+    protected $entityManager = null;
+
+
+    // public function __construct(Entity $entity, EntityManager $entityManager, AnnotationReader $annotationReader)
+    public function __construct(EntityManager $entityManager, $id = null)
+    {
+        $this->entityManager = $entityManager;
+        $reflectionClass     = new \ReflectionClass($this);
+        $class               = $reflectionClass->getShortName();
+        $this->class         = $class;
+        $entityClass         = $this->getEntityClass($class);
+        if ($id !== null && $id !== 0) {
+            $this->entity = $this->entityManager->find($entityClass, $id);
+        }
+        if ($id === 0) {
+            $this->entity = new $entityClass();
+        }
+
+        /*$reflectionClass        = new \ReflectionClass($this);
         $this->class            = $reflectionClass->getShortName();
         $this->entity           = $entity;
         $this->entityManager    = $entityManager;
@@ -62,23 +76,17 @@ class DTO
                     $this->$name = $instance;
                 }
             }
-        }
+        }*/
     }
 
-    public function getEntity()
+    public function save(EntityManager $entityManager)
     {
-        return $this->entity;
-    }
+        $this->entityManager = $entityManager;
+        $reflectionClass     = new \ReflectionClass($this);
+        $class               = $reflectionClass->getShortName();
+        $this->class         = $class;
+        $entityClass         = $this->getEntityClass($class);
 
-    public function __call($method, $argv)
-    {
-        if ( ! $this->entity) {
-            throw new \RuntimeException('DTO have no Entity');
-        }
-        if (in_array(substr($method, 0, 3), array('get', 'set'))) {
-            return call_user_func_array(array($this->entity, $method), $argv);
-        } else {
-            throw new \RuntimeException('Could not call this method: ' . $method);
-        }
+        //
     }
 }

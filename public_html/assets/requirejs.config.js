@@ -13,7 +13,17 @@ require.config({
         "requirejs": "bower_components/requirejs/require",
         "semantic-ui": "bower_components/semantic-ui/dist/semantic",
         "lodash": "bower_components/lodash",
-        "node-uuid": "bower_components/node-uuid/uuid"
+        "object-path": "bower_components/object-path/index",
+        "node-uuid": "bower_components/node-uuid/uuid",
+        "pager": "bower_components/pagerjs/pager",
+        "cs": "bower_components/require-cs/cs",
+        "coffee-script": "bower_components/coffeescript/extras/coffee-script"
+    },
+    map: {
+        '*': {
+            'datasource': 'common/datasource',
+            'datagrid': 'app/vm/datagrid/model',
+        }
     },
     shim: {
         'semantic-ui': {

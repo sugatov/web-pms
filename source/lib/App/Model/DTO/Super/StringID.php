@@ -9,5 +9,14 @@ class StringID extends DTO
      * @Serializer\Expose(true)
      * @Serializer\Type("string")
      */
-    protected $id;
+    public $id;
+
+    public function __construct($entityManager, $id)
+    {
+        parent::__construct($entityManager, $id);
+
+        if ($this->entity) {
+            $this->id = $this->entity->getId();
+        }
+    }
 }

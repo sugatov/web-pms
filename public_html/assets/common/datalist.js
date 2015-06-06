@@ -1,8 +1,10 @@
-define(['knockout-es5', 'text!./view.html', '../gridview/model', '../paginator/model', 'pager'], function(ko, tpl) {
-    ko.components.register('datagrid', {
+// define(['knockout-es5', 'text!./datalist.html', './listview', 'app/vm/paginator/model'], function(ko, tpl) {
+define(['knockout-es5', 'text!./datalist.html', './listview'], function(ko, tpl) {
+    ko.components.register('datalist', {
         viewModel: function (params) {
             var self                = this;
             this.dataSource         = params.dataSource;
+            this.column             = params.column;
             this.page               = 1;
             this.paginatorPage      = 1;
             this.perPage            = params.perPage;
@@ -35,6 +37,12 @@ define(['knockout-es5', 'text!./view.html', '../gridview/model', '../paginator/m
                     self.onSelectCallback(val);
                 }
             }
+
+            this.deleteObject = function () {
+                if (self.selectedId !== null && confirm('Вы уверены в том, что хотите удалить выбранный объект?')) {
+                    self.dataSource.delete(self.selectedId);
+                }
+            };
 
             this.search = function (criteria) {
                 self.dataSource.filter = criteria;

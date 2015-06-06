@@ -115,7 +115,20 @@ return call_user_func(function () {
         return true;
     };
 
-    $SL['serializer'] = function () use ($SL) {
+    $SL['serializer'] = function () use ($SL)
+    {
+        $SL['annotationReaderAutoloader'];
+        $debugMode = $SL['config']['app']['debug'];
+        OSS\Configuration::setDebugMode($debugMode);
+        if ( ! $debugMode) {
+            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
+            OSS\Configuration::setCacheDriver($cacheDriver);
+        }
+        OSS\Configuration::setMode(OSS\Configuration::MEDIUM_STRICT_MODE);
+        return OSS\Configuration::createAnnotationMetadataConfiguration();
+    };
+
+    $SL['serializer___'] = function () use ($SL) {
         $cacheDriver = null;
         if ( ! $SL['config']['app']['debug']) {
             $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');

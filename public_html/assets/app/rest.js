@@ -35,7 +35,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -48,7 +48,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -62,7 +62,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -75,7 +75,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -88,7 +88,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -102,7 +102,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -116,7 +116,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -130,7 +130,7 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
         };
@@ -144,9 +144,19 @@ define(function () {
                     callback(response.data);
                 },
                 function (response) {
-                    console.log(response);
+                    self.errorHandler(response);
                 }
             );
+        };
+
+        self.errorHandler = function (response) {
+            if (response.responseJSON) {
+                for (var i = 0; i < response.responseJSON.errors.length; i++) {
+                    console.log(response.responseJSON.errors[i].message);
+                };
+            } else {
+                console.log(response.responseText);
+            }
         };
     };
 });

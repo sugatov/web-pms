@@ -14,4 +14,13 @@ if ( ! $SL['cache']->exists('manager.yml')) {
 }
 $SL['config'] = $config;
 
-$SL['app']->run();
+if ($SL['config']['app']['debug']) {
+    $timer = $SL['timer'];
+    error_log("Application start" . PHP_EOL);
+    $SL['app']->run();
+    error_log("\033[1;41;37mExecution time: ".$timer->stop()."\033[0m" . PHP_EOL);
+
+} else {
+    $SL['app']->run();
+}
+

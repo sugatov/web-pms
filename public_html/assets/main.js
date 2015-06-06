@@ -2,52 +2,77 @@ require(
     [
         'less',
         'knockout-es5',
+        // 'pager',
         'app/app',
-        'jquery',
-        'common/datasource',
-        'app/vm/datagrid/model',
-        'knockout-jqueryui/dialog',
-        'common/confirmation-dialog'
+        'common/gridview'
+        // 'jquery-ui/dialog',
+        /*'knockout-jqueryui/dialog',
+        'app/room-categories',
+        'app/rooms'*/
     ],
-    function(less, ko, app, $, datasource) {
+    function(less, ko, app) {
         var vm = function () {
             var self = this;
-            this.showDialog = false;
-            this.categories = [];
+            this.roomCategories = false;
+            this.rooms= false;
+
+            this.list = [];
             this.columns = [
                 {
                     name: 'id',
-                    displayName: 'ID'
+                    label: 'ID'
                 },
                 {
                     name: 'name',
-                    displayName: 'Имя'
+                    label: 'Name',
+                    search: true
                 },
                 {
-                    name: 'price',
-                    displayName: 'Цена'
+                    name: 'isAvailable',
+                    label: 'Available',
+                    type: 'boolean'
+                },
+                {
+                    name: 'roomCategory.name',
+                    label: 'Категория'
                 }
             ];
-            app.rest.list('RoomCategory', function (list) {
-                self.categories = list;
-            });
-            
 
             ko.track(this);
 
-            this.dlgShow = function () {
-                self.showDialog = true;
+            app.rest.list('Room', function(response) {
+                self.list = response;
+            });
+
+            this.showRoomCategories = function () {
+                self.roomCategories = true;
             };
-            this.dlgHide = function () {
-                self.showDialog = false;
+            this.hideRoomCategories = function () {
+                self.roomCategories = false;
+            };
+            this.showRooms = function () {
+                this.rooms = true;
+            };
+            this.hideRooms = function () {
+                this.rooms = false;
             };
 
-            this.source = new datasource('RoomCategory', this.columns, {});
+
+
+
+
 
             this.log = function (val) {
                 console.log(val);
             };
         };
+
         ko.applyBindings(new vm());
+
+        // var viewModel = new vm();
+        // pager.extendWithPage(viewModel);
+        // ko.applyBindings(viewModel);
+        // pager.start();
+
     }
 );

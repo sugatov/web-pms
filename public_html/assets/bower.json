@@ -20,6 +20,9 @@
     "jquery": "latest",
     "jquery-ui": "latest",
     "lodash": "3.8.0-amd",
-    "node-uuid": "latest"
+    "object-path": "latest",
+    "node-uuid": "latest",
+    "pagerjs": "latest",
+    "require-cs": "latest"
   }
 }

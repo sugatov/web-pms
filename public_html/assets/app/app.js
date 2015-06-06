@@ -28,6 +28,15 @@ define(['./http', './rest'], function(http, rest) {
 
         self.http = http;
         self.rest = new rest(http, '/api/rest');
+        self.rest.errorHandler = function (response) {
+            if (response.responseJSON) {
+                for (var i = 0; i < response.responseJSON.errors.length; i++) {
+                    alert(response.responseJSON.errors[i].message);
+                };
+            } else {
+                alert(response.responseText);
+            }
+        };
     };
     return new app();
 });

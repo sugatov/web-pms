@@ -1,5 +1,5 @@
-define(['knockout-es5', 'text!./view.html'], function(ko, tpl) {
-    ko.components.register('search-criterion', {
+define(['knockout-es5', 'text!./search-criterion.html'], function(ko, tpl) {
+    ko.components.register('listview-search-criterion', {
         viewModel: function (params) {
             var self         = this;
             this.name        = params.column.name;
@@ -10,6 +10,7 @@ define(['knockout-es5', 'text!./view.html'], function(ko, tpl) {
             ko.track(this);
 
             ko.getObservable(this, 'value').subscribe(function (val) {
+                console.log('criterion: '+val);
                 if (typeof self.onChange === 'function') {
                     self.onChange({
                         name: self.name,

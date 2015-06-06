@@ -1,0 +1,5 @@
+<h4 class="ui header" data-bind="column.displayName"></h4>
+<listview-search-criterion params="column: column, onChange: criterionChange"></listview-search-criterion>
+<ul data-bind="foreach: items">
+    <li data-bind="text: $data[$parent.column.name]"></li>
+</ul>

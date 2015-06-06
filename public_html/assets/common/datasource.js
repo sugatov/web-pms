@@ -50,12 +50,56 @@ define(['knockout-es5', 'app/app'], function (ko, app) {
             250);
         };
 
+
+        this.getDummy = function (callback) {
+            self.client.getNew(self.entity, callback);
+        };
+        
+        this.getObject = function (id, callback) {
+            self.client.get(self.entity, id, callback);
+        };
+
+        this.createObject = function (data, callback) {
+            self.client.post(self.entity,
+                             data,
+                             function (response) {
+                                self.update();
+                                if (typeof callback === 'function') {
+                                    callback(response);
+                                }
+                             });
+        };
+
+        this.updateObject = function (id, data, callback) {
+            self.client.put(self.entity,
+                            id,
+                            data,
+                            function (response) {
+                                self.update();
+                                if (typeof callback === 'function') {
+                                    callback(response);
+                                }
+                            });
+        };
+
+        this.patchObject = function (id, data, callback) {
+            self.client.patch(self.entity,
+                              id,
+                              data,
+                              function (response) {
+                                  self.update();
+                                  if (typeof callback === 'function') {
+                                      callback(response);
+                                  }
+                              });
+        };
+
         this.delete = function (id) {
             self.isUpdating = true;
             self.client.delete(self.entity,
                                id,
                                function (result) {
-                                   self.updateImmediately();
+                                   self.update();
                                });
         };
 
