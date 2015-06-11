@@ -128,61 +128,6 @@ return call_user_func(function () {
         return OSS\Configuration::createAnnotationMetadataConfiguration();
     };
 
-    $SL['serializer___'] = function () use ($SL) {
-        $cacheDriver = null;
-        if ( ! $SL['config']['app']['debug']) {
-            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
-        }
-        return new OSS\Serializer(
-            new OSS\Adapter\MyArrayAdapter(
-                new OSS\Metadata\MetadataFactory(
-                    new OSS\Metadata\Driver\AnnotationDriver(
-                        $SL['annotationReader']
-                    ),
-                    $cacheDriver,
-                    $SL['config']['app']['debug']
-                ),
-                $SL['entityManager']
-            ),
-            new OSS\Adapter\JsonAdapter()
-        );
-    };
-
-    $SL['serializer__'] = function () use ($SL) {
-        $builder = new JMS\Serializer\SerializerBuilder();
-        $serializer =
-            JMS\Serializer\SerializerBuilder::create()
-            // ->setCacheDir($someWritableDir)
-            ->setDebug(true)
-            ->build();
-        return $serializer;
-    };
-
-    $SL['serializer_'] = function () use ($SL) {
-        $cacheDriver = null;
-        if ( ! $SL['config']['app']['debug']) {
-            $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
-        }
-        return new OSS\Serializer(
-            new OSS\Adapter\MyArrayAdapter(
-                new OSS\Metadata\MetadataFactory(
-                    new OSS\Metadata\Driver\YamlDriver(
-                        new OSS\Metadata\Driver\FileLocator(
-                            array(
-                                'App\\Model\\Entities'        => $SL['LOCAL_LIB'] . '/App/Model/Entities',
-                                'App\\Model\\Entities\\Super' => $SL['LOCAL_LIB'] . '/App/Model/Entities/Super',
-                                '\\'                          => $SL['LOCAL_LIB']
-                            )
-                        )
-                    ),
-                    $cacheDriver,
-                    $SL['config']['app']['debug']
-                )
-            ),
-            new OSS\Adapter\JsonAdapter()
-        );
-    };
-
     $SL['entityManager'] = function () use ($SL) {
         $SL['setTimezone'];
         $eventManager = new \Doctrine\Common\EventManager();
@@ -209,11 +154,6 @@ return call_user_func(function () {
         $configuration->addEntityNamespace('App', 'App\\Model\\Entities');
 
         $SL['annotationReaderAutoloader'];
-        // \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
-        /*\Doctrine\Common\Annotations\AnnotationRegistry::registerAutoloadNamespace(
-            'JMS\Serializer\Annotation',
-            __DIR__ . "/vendor/jms/serializer/src"
-        );*/
 
         $em = ORM\EntityManager::create(
             $SL['config']['app']['database']['config'],
@@ -292,11 +232,6 @@ return call_user_func(function () {
             $pattern = $route['pattern'];
             $routeMapping = $slim->map($mapTo . $pattern, $callback);
             $routeMapping->setName($key);
-            // Slim version <= 2.5:
-            /*array_walk($route['methods'], function(method) use ($routeMapping) {
-                $routeMapping->via($method);
-            });*/
-            // Slim version >= 2.5:
             $routeMapping->via($route['methods']);
         });
     });
@@ -317,11 +252,9 @@ return call_user_func(function () {
 
     $SL['controllers.Rest'] = function () use ($SL) {
         return new App\Controllers\Rest($SL['app'],
-                                  $SL['entityManager'],
-                                  $SL['serializer'],
-                                  $SL['annotationReader'],
                                   $SL['globalViewScope'],
-                                  new \App\ServiceProvider($SL));
+                                  new \App\ServiceProvider($SL),
+                                  $SL['entityManager']);
     };
 
     $SL['controllers.Routes'] = function () use ($SL) {
