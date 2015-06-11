@@ -3,7 +3,7 @@ use ArrayAccess;
 use Slim;
 use Opensoft\SimpleSerializer\Serializer;
 
-class Controller
+abstract class Controller
 {
     /**
      * @var Slim\Slim
@@ -44,7 +44,7 @@ class Controller
         $this->app             = $application;
         $this->globalViewScope = $globalViewScope;
         $this->serviceProvider = $serviceProvider;
-        
+
         $this->errors               = array();
         $this->isJsonResponse       = true;
         $this->errorHandlerTemplate = null;
@@ -122,7 +122,7 @@ class Controller
     public function beforeDispatch()
     {
     }
-    
+
     public function afterDispatch()
     {
     }
@@ -145,9 +145,9 @@ class Controller
         } elseif (!is_string($error)) {
             $error = (string) $error;
         }
-        
+
         $this->addError($error, $code);
-        
+
         if ($this->isJsonResponse) {
             $this->jsonResponse(null);
         } else {

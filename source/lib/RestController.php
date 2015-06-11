@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Opensoft\SimpleSerializer\Serializer;
 use Rs\Json\Patch as JsonPatch;
 
-class RestController extends Controller
+abstract class RestController extends Controller
 {
     const STRICT_MODE        = 2;
     const MEDIUM_STRICT_MODE = 1;
@@ -39,10 +39,7 @@ class RestController extends Controller
         $this->annotationReader = $annotationReader;
     }
 
-    protected function getClass($class)
-    {
-        return 'App\\Model\\Entities\\' . $class;
-    }
+    abstract protected function getClass($class);
 
     protected function classExists($class)
     {

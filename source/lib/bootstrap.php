@@ -316,7 +316,7 @@ return call_user_func(function () {
     });
 
     $SL['controllers.Rest'] = function () use ($SL) {
-        return new RestController($SL['app'],
+        return new App\Controllers\Rest($SL['app'],
                                   $SL['entityManager'],
                                   $SL['serializer'],
                                   $SL['annotationReader'],
