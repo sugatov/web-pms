@@ -15,8 +15,10 @@ class StdErrSQLLogger implements SQLLogger
     {
         $this->timer = new Timer();
         error_log("\033[0;1;36m$sql");
-        foreach ($params as $index=>$param) {
-            error_log("\033[0;33m($types[$index]) \033[1m$param\033[0m");
+        if (is_array($params) && is_array($types)) {
+            foreach ($params as $index=>$param) {
+                error_log("\033[0;33m($types[$index]) \033[1m$param\033[0m");
+            }
         }
     }
 
