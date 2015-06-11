@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -20,26 +21,36 @@ class Service extends Super\IntegerID
     /**
      * @ORM\ManyToOne(targetEntity="Invoice")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Invoice")
      */
     private $invoice;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $created;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $updated;
 
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $comment = '';
 
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $price;
 

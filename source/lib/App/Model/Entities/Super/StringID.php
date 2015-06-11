@@ -2,6 +2,7 @@
 namespace App\Model\Entities\Super;
 
 use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\MappedSuperclass
@@ -11,6 +12,8 @@ class StringID extends Entity
     /**
      * @ORM\Id
      * @ORM\Column(type="string")
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $id = null;
 

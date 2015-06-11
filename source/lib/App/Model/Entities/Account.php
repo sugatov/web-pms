@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -12,6 +13,8 @@ class Account extends Super\IntegerID
     /**
      * @ORM\OneToOne(targetEntity="Customer",inversedBy="account")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Customer")
      */
     private $customer;
 

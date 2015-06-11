@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="\App\Model\Repositories\Users")
@@ -18,21 +19,28 @@ class User extends Super\StringID
 {
     /**
      * @ORM\Column(type="datetime", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $created;
 
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(false)
      */
     private $password;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime<Y-m-d>")
      */
     private $birthday;
 
     /**
      * @ORM\Column(type="string", unique=false, nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $fullname;
 

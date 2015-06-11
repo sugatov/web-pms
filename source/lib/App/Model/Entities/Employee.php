@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -11,6 +12,8 @@ class Employee extends User
 {
     /**
      * @ORM\Column(type="boolean", name="Employee_isFired", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("boolean")
      */
     private $isFired = false;
 

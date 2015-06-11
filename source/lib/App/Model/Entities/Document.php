@@ -2,6 +2,7 @@
 namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -17,17 +18,23 @@ class Document extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $data = '';
 
     /**
      * @ORM\ManyToOne(targetEntity="Customer")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Customer")
      */
     private $customer;
 

@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -11,12 +12,16 @@ class Role extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", length=16, unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $name = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="Employee")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Employee")
      */
     private $employee;
 

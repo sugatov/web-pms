@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -12,21 +13,29 @@ class Check extends Super\IntegerID
     /**
      * @ORM\ManyToOne(targetEntity="Customer")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Customer")
      */
     private $customer;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $checkInDate;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $checkOutDate;
 
     /**
      * @ORM\Column(type="text", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $comment = '';
 

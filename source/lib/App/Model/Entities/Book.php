@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -11,22 +12,30 @@ class Book extends Service
 {
     /**
      * @ORM\Column(type="date", name="Book_firstDay", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime<Y-m-d>")
      */
     private $firstDay;
 
     /**
      * @ORM\Column(type="date", name="Book_lastDay", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime<Y-m-d>")
      */
     private $lastDay;
 
     /**
      * @ORM\Column(type="boolean", name="Book_isConfirmed", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("boolean")
      */
     private $isConfirmed = false;
 
     /**
      * @ORM\ManyToOne(targetEntity="Room")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Room")
      */
     private $room;
 

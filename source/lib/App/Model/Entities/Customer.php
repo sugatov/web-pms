@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -11,11 +12,15 @@ class Customer extends User
 {
     /**
      * @ORM\Column(type="string", name="Customer_email", unique=true, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $email;
 
     /**
      * @ORM\OneToOne(targetEntity="Account", mappedBy="customer")
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Account")
      */
     private $account;
 
@@ -26,6 +31,8 @@ class Customer extends User
 
     /**
      * @ORM\Column(type="text", name="Customer_comment", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $comment = '';
 

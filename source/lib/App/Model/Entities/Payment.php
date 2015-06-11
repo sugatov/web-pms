@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -21,27 +22,37 @@ class Payment extends Super\IntegerID
     /**
      * @ORM\ManyToOne(targetEntity="Account")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Account")
      */
     private $account;
 
     /**
      * @ORM\Column(type="datetime", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
     private $date;
 
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $amount;
 
     /**
      * @ORM\Column(type="string", length=3, unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $currency = 'RUR';
 
     /**
      * @ORM\OneToOne(targetEntity="Invoice", inversedBy="payment")
      * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("App\Model\Entities\Invoice")
      */
     private $invoice;
 

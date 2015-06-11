@@ -3,6 +3,7 @@ namespace App\Model\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
  * @ORM\Entity
@@ -11,16 +12,22 @@ class RoomCategory extends Super\IntegerID
 {
     /**
      * @ORM\Column(type="string", unique=true, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $price;
 
     /**
      * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $designation;
 
