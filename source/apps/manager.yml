@@ -24,3 +24,8 @@ app:
         "/help":
             !imports:
                 - "./routers/help.yml"
+
+    roles:
+        su:
+            !imports:
+                - "./roles/su.yml"

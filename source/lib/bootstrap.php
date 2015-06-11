@@ -254,7 +254,9 @@ return call_user_func(function () {
         return new App\Controllers\Rest($SL['app'],
                                   $SL['globalViewScope'],
                                   new \App\ServiceProvider($SL),
-                                  $SL['entityManager']);
+                                  $SL['entityManager'],
+                                  $SL['config']['app']['roles']['su']['rest']['readable'],
+                                  $SL['config']['app']['roles']['su']['rest']['writable']);
     };
 
     $SL['controllers.Routes'] = function () use ($SL) {
