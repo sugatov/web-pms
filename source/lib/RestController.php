@@ -2,7 +2,6 @@
 use Slim\Slim;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Opensoft\SimpleSerializer\Serializer;
 use Rs\Json\Patch as JsonPatch;
 
@@ -13,10 +12,6 @@ abstract class RestController extends Controller
     const NON_STRICT_MODE    = 0;
 
     /**
-     * @var Slim
-     */
-    protected $application;
-    /**
      * @var ObjectManager
      */
     protected $objectManager;
@@ -24,19 +19,16 @@ abstract class RestController extends Controller
      * @var Serializer
      */
     protected $serializer;
-    /**
-     * @var AnnotationReader
-     */
-    protected $annotationReader;
 
-    public function __construct(Slim $application, ObjectManager $objectManager, Serializer $serializer, AnnotationReader $annotationReader, array $globalViewScope, ServiceProviderInterface $serviceProvider)
+    public function __construct(Slim $application,
+                                array $globalViewScope,
+                                ServiceProviderInterface $serviceProvider,
+                                ObjectManager $objectManager)
     {
         parent::__construct($application, $globalViewScope, $serviceProvider);
 
-        $this->application      = $application;
         $this->objectManager    = $objectManager;
-        $this->serializer       = $serializer;
-        $this->annotationReader = $annotationReader;
+        $this->serializer       = $serviceProvider->getSerializer();
     }
 
     abstract protected function getClass($class);

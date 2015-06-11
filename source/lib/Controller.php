@@ -33,8 +33,8 @@ abstract class Controller
 
 
     /**
-     * @param Slim\Slim                             $application
-     * @param array                                 $globalViewScope    Scope to share through all views
+     * @param Slim\Slim                   $application
+     * @param array                       $globalViewScope    Scope to share through all views
      * @param ServiceProviderInterface    $serviceProvider
      */
     public function __construct(Slim\Slim $application,

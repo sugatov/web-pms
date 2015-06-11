@@ -15,8 +15,8 @@ class Controller extends \Controller
     protected $serviceProvider;
 
     /**
-     * @param Slim\Slim                             $application
-     * @param array                                 $globalViewScope    Scope to share through all views
+     * @param Slim\Slim                   $application
+     * @param array                       $globalViewScope    Scope to share through all views
      * @param ServiceProviderInterface    $serviceProvider
      */
     public function __construct(Slim\Slim $application,
