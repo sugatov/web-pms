@@ -1,0 +1,6 @@
+{% extends 'SonataAdminBundle:CRUD:base_list_field.html.twig' %}
+
+{% block field%}
+    {% set amount = value.getAmount/100 %}
+    {{ value.getCurrency }} {{ amount|number_format(2, ',', "\'") }}
+{% endblock %}

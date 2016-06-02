@@ -1,0 +1,31 @@
+#!/bin/sh
+namesForMen=`cat name.men.txt`
+namesForWomen=`cat name.women.txt`
+lastnames=`cat lastname.txt`
+
+minYear="1940"
+maxAge="70"
+
+delta=$(( ($minYear-1970)*365*24*60*60 ))
+maxTimestamp=$(( $maxAge*365*24*60*60 ))
+
+birthday()
+{
+	shuffle=`shuf -i 0-$maxTimestamp -n 1`
+	ts=$(( $shuffle+$delta ))
+	echo `date -d@$ts -I`
+}
+
+
+echo "$lastnames" | while read lastname; do
+	echo "$namesForMen" | while read name; do
+		bday=$( birthday )
+		echo "$name $lastname,$bday"
+	done
+	echo "$namesForWomen" | while read name; do
+		bday=$( birthday )
+		lastname=`echo "$lastname" | sed -e 's/в$/ва/' -e 's/ий$/ая/' -e 's/ин$/ина/'`
+		echo "$name $lastname,$bday"
+	done
+done
+

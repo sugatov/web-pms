@@ -1,8 +1,8 @@
 *.sublime-workspace
+*.sublime-project
+/.idea
 /source/lib/vendor
 /public_html/assets/bower_components
-/.idea
-*.sublime-project
 /source/data/cache/templates
 /source/data/cache/serializer
 /source/data/cache/filecache
@@ -10,3 +10,16 @@
 *.php~
 /source/lib/composer.phar
 /.vagrant
+/web/bundles/
+/app/bootstrap.php.cache
+/app/cache/*
+/app/config/parameters.yml
+/app/logs/*
+!app/cache/.gitkeep
+!app/logs/.gitkeep
+/app/phpunit.xml
+/build/
+/vendor/
+/bin/
+composer.lock
+
