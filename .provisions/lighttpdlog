@@ -1,3 +1,0 @@
-#!/bin/bash
-sudo service lighttpd stop
-sudo lighttpd -D -f /etc/lighttpd/lighttpd.conf

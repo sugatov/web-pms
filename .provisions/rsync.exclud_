@@ -1,6 +1,0 @@
-.git/
-source/lib/vendor/
-source/lib/composer.lock
-source/data/
-public_html/assets/bower_components/
-public_html/uploads

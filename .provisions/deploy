@@ -1,8 +1,0 @@
-#!/bin/bash
-cd /vagrant/source/lib
-sudo -u vagrant -H sh -c "composer update"
-cd /vagrant/public_html/assets
-sudo -u vagrant -H sh -c "bower update"
-# sudo -u vagrant -H sh -c "bower-requirejs -c require.config.js"
-cd /vagrant/source
-./doctrine.sh orm:schema-tool:update --force

@@ -1,2 +1,0 @@
-#!/bin/bash
-rsync --verbose --archive --delete -z --copy-links --keep-dirlinks --chmod=Du=rwx,Dg=rwx,Do=rwx,Fu=rwx,Fg=rwx,Fo=rwx --include-from="./.provisions/rsync.include" --exclude-from="./.provisions/rsync.exclude" --no-owner --no-group --rsync-path sudo rsync -e ssh -p 2222 -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i '/home/evgeny/.vagrant.d/insecure_private_key' --exclude .vagrant/ /home/evgeny/Dropbox/source/git/web-pms/ vagrant@127.0.0.1:/vagrant
