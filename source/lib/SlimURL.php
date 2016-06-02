@@ -1,5 +1,4 @@
 <?php
-
 use Slim\Slim;
 
 class SlimURL implements URLInterface

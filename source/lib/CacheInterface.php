@@ -3,23 +3,22 @@ interface CacheInterface
 {
     /**
      * @param  string  $key
-     * @param  integer $maxAge
      * @return string|null
      */
-    public function get($key, $maxAge = 0);
+    public function get($key);
 
     /**
      * @param string $key
      * @param string $data
+     * @param integer $maxAge
      */
-    public function set($key, $data);
+    public function set($key, $data, $maxAge = 0);
 
     /**
      * @param  string  $key
-     * @param  integer $maxAge
      * @return boolean
      */
-    public function exists($key, $maxAge = 0);
+    public function exists($key);
 
     /**
      * @param  string $key

@@ -26,6 +26,25 @@ class FileStorage implements StorageInterface
         return $this->directory . DIRECTORY_SEPARATOR . $name;
     }
 
+    protected function getStockFilename($name)
+    {
+        if ( ! preg_match('/^[0-9a-zA-Z.\-_]+$/', $name)) {
+            throw new \RuntimeException('A storage name should not contain any special characters in it!');
+        }
+        return $this->directory . DIRECTORY_SEPARATOR . 'stock' . DIRECTORY_SEPARATOR . $name;
+    }
+
+    protected function getActualFilename($name)
+    {
+        $stock = $this->getStockFilename($name);
+        $new = $this->getFilename($name);
+        if ( ! file_exists($new) && file_exists($stock)) {
+            return $stock;
+        } else {
+            return $new;
+        }
+    }
+
     /**
      * @param  string $name
      * @return string|null
@@ -35,7 +54,7 @@ class FileStorage implements StorageInterface
         if ( ! $this->exists($name)) {
             throw new \RuntimeException('Could not find a storage entry!');
         }
-        $filename = $this->getFilename($name);
+        $filename = $this->getActualFilename($name);
         return file_get_contents($filename);
     }
 
@@ -59,8 +78,12 @@ class FileStorage implements StorageInterface
      */
     public function append($name, $data)
     {
-        $filename = $this->getFilename($name);
-        if (file_put_contents($filename, $data, FILE_APPEND | LOCK_EX) === false) {
+        $stock = $this->getStockFilename($name);
+        $new = $this->getFilename($name);
+        if ( ! file_exists($new) && file_exists($stock)) {
+            copy($stock, $new);
+        }
+        if (file_put_contents($new, $data, FILE_APPEND | LOCK_EX) === false) {
             throw new \RuntimeException('Could not write to storage!');
         }
     }
@@ -71,8 +94,9 @@ class FileStorage implements StorageInterface
      */
     public function exists($name)
     {
-        $filename = $this->getFilename($name);
-        return file_exists($filename);
+        $stock = file_exists($this->getStockFilename($name));
+        $new = file_exists($this->getFilename($name));
+        return $new | $stock;
     }
 
     /**

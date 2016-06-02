@@ -10,30 +10,21 @@ use App\Services;
 class Controller extends \Controller
 {
     /**
-     * @var ControllerServiceProviderInterface
+     * @var ServiceProviderInterface
      */
     protected $serviceProvider;
 
     /**
-     * @param Slim\Slim                             $application
-     * @param array                                 $globalViewScope    Scope to share through all views
-     * @param ControllerServiceProviderInterface    $serviceProvider
+     * @param Slim\Slim                   $application
+     * @param array                       $globalViewScope    Scope to share through all views
+     * @param ServiceProviderInterface    $serviceProvider
      */
     public function __construct(Slim\Slim $application,
                                 $globalViewScope,
-                                ControllerServiceProviderInterface $serviceProvider)
+                                ServiceProviderInterface $serviceProvider)
     {
         parent::__construct($application, $globalViewScope, $serviceProvider);
-
-        $cacheKey = 'articles-event-dates-tree';
-        if ($this->cache()->exists($cacheKey, 86400)) {
-            $eventDatesTree = unserialize($this->cache()->get($cacheKey));
-            $this->globalViewScope['eventDatesTree'] = $eventDatesTree;
-        } else {
-            $eventDatesTree = $this->prepareEventDatesTree();
-            $this->cache()->set($cacheKey, serialize($eventDatesTree));
-            $this->globalViewScope['eventDatesTree'] = $eventDatesTree;
-        }
+        $this->isJsonResponse(false, 'template.twig');
     }
 
     /**
@@ -69,50 +60,10 @@ class Controller extends \Controller
     }
 
     /**
-     * @return Services\Articles
-     */
-    protected function articles()
-    {
-        return $this->serviceProvider->getArticles();
-    }
-
-    /**
      * @return Services\Uploads
      */
     protected function uploads()
     {
         return $this->serviceProvider->getUploads();
-    }
-
-    /**
-     * @return Services\Statistics
-     */
-    protected function statistics()
-    {
-        return $this->serviceProvider->getStatistics();
-    }
-
-    /**
-     * @return array
-     */
-    protected function prepareEventDatesTree()
-    {
-        $centuries = $this->articles()->getEventCenturyList();
-        foreach ($centuries as &$century) {
-            $decades = $this->articles()->getEventDecadeList($century['century']);
-            foreach ($decades as &$decade) {
-                $years = $this->articles()->getEventYearList($century['century'], $decade['decade']);
-                foreach ($years as &$year) {
-                    $months = $this->articles()->getEventMonthList($year['year']);
-                    $year['months'] = $months;
-                    unset($year);
-                }
-                $decade['years'] = $years;
-                unset($decade);
-            }
-            $century['decades'] = $decades;
-            unset($century);
-        }
-        return $centuries;
     }
 }

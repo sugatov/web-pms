@@ -1,8 +1,10 @@
 <?php
 namespace App\Model\Entities\Super;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class Entity
 {

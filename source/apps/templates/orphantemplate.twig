@@ -1,7 +1,9 @@
-{% use 'assets.twig' %}
+{% use 'blocks/assets.twig' %}
 {% block assets %}{{parent()}}{% endblock %}
 {% block body %}
     {% use 'blocks/services.twig' %}
     {% block services %}{{parent()}}{% endblock %}
-    {% include 'errorlist.twig' %}
+
+    {% use 'blocks/errorlist.twig' %}
+    {% block errorlist %}{{parent()}}{% endblock %}
 {% endblock %}

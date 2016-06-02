@@ -1,0 +1,6 @@
+<gridview params="items: dataSource.items, columns: dataSource.columns, onSelect: onSelect, search: search"></gridview>
+<!--ko if: dataSource.isUpdating-->
+    <div class="ui active loader"></div>
+<!--/ko-->
+<paginator params="page: paginatorPage, count: pageCount, onChange: pageChange"></paginator>
+

@@ -1,0 +1,25 @@
+<table class="ui small very compact table">
+    <thead>
+        <tr data-bind="foreach: columns">
+            <th>
+                <div data-bind="text: $data.displayName"></div>
+                <!--ko if: $parent.haveSearch-->
+                    <!--ko component: {
+                        name: 'search-criterion',
+                        params: {
+                            column: $data,
+                            onChange: $parent.criterionChange
+                        }
+                    }-->
+                    <!--/ko-->
+                <!--/ko-->
+            </th>
+        </tr>
+    </thead>
+    <tbody data-bind="foreach: {data: items, as: 'item'}">
+        <tr data-bind="foreach: {data: $parent.columns, as: 'column'}, click: $parent.selectItem, css: {active: $parent.selectedId == item.id}">
+            <td data-bind="text: item[column.name]">
+            </td>
+        </tr>
+    </tbody>
+</table>

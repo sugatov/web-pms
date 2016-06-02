@@ -9,9 +9,20 @@
   ],
   "dependencies": {
     "semantic-ui": "latest",
-    "knockoutjs": "latest",
+    "knockout": "latest",
+    "knockout-es5": "latest",
     "knockout-mapping": "latest",
+    "knockout-jqueryui": "latest",
     "less.js": ">= 2.0 < 2.2",
-    "highlightjs": "latest"
+    "requirejs": "latest",
+    "requirejs-text": "latest",
+    "modernizr": "latest",
+    "jquery": "latest",
+    "jquery-ui": "latest",
+    "lodash": "3.8.0-amd",
+    "object-path": "latest",
+    "node-uuid": "latest",
+    "pagerjs": "latest",
+    "require-cs": "latest"
   }
 }

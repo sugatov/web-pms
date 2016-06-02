@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
-{% use 'head.twig' %}
+{% use 'blocks/head.twig' %}
 {% block head %}{{parent()}}{% endblock %}
 <body>
     {% use 'blocks/services.twig' %}
     {% block services %}{{parent()}}{% endblock %}
+    
     {% use 'blocks/menu.twig' %}
     {% block menu %}{{parent()}}{% endblock %}
-    {% include 'errorlist.twig' %}
+    
+    {% use 'blocks/errorlist.twig' %}
+    {% block errorlist %}{{parent()}}{% endblock %}
+    
     {% block body %}
     {% endblock %}
 </body>

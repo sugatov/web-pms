@@ -23,12 +23,12 @@ class FileCache implements CacheInterface
         return $this->directory . DIRECTORY_SEPARATOR . sprintf('%u', crc32($key)) . '.cache';
     }
 
-    protected function checkFile($filename, $maxAge = 0)
+    protected function checkFile($filename)
     {
         if ( ! file_exists($filename)) {
             return false;
         }
-        if (is_int($maxAge) && $maxAge > 0 && (time() - filemtime($filename)) > $maxAge) {
+        if (time() > filemtime($filename)) {
             return false;
         }
         return true;
@@ -36,37 +36,41 @@ class FileCache implements CacheInterface
 
     /**
      * @param  string  $key
-     * @param  integer $maxAge
      * @return string|null
      */
-    public function get($key, $maxAge = 0)
+    public function get($key)
     {
         $filename = $this->getFilename($key);
-        if ($this->checkFile($filename, $maxAge)) {
+        if ($this->checkFile($filename)) {
             return file_get_contents($filename);
         }
         return null;
     }
 
     /**
-     * @param string $key
-     * @param string $data
+     * @param string  $key
+     * @param string  $data
+     * @param integer $maxAge
      */
-    public function set($key, $data)
+    public function set($key, $data, $maxAge = 0)
     {
+        $until = 2147483647;
+        if (is_integer($maxAge) && $maxAge > 0) {
+            $until = time() + $maxAge;
+        }
         $filename = $this->getFilename($key);
         file_put_contents($filename, $data);
+        touch($filename, $until);
     }
 
     /**
      * @param  string  $key
-     * @param  integer $maxAge
      * @return boolean
      */
-    public function exists($key, $maxAge = 0)
+    public function exists($key)
     {
         $filename = $this->getFilename($key);
-        return $this->checkFile($filename, $maxAge);
+        return $this->checkFile($filename);
     }
 
     /**
@@ -78,7 +82,7 @@ class FileCache implements CacheInterface
         $filename = $this->getFilename($key);
         if (file_exists($filename)) {
             if ( ! unlink($filename)) {
-                throw new \RuntimeException('Could not delete this file!');
+                throw new \RuntimeException('Could not delete this cache file!');
             }
         }
     }

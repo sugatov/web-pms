@@ -3,10 +3,10 @@ slim:
         - './slim.yml'
 
 app:
-    timezone: 'Europe/Moscow'
+    timezone: 'Europe/Minsk'
 
-    debug: false
-    sqlLog: false
+    debug: true
+    sqlLog: true
 
     salt: '!@#$%^&*()'
 

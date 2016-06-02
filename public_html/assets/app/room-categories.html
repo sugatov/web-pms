@@ -1,0 +1,37 @@
+<div class="ui top attached tiny icon buttons">
+        <div class="ui teal labeled icon button" data-bind="click: add">
+            <i class="plus icon"></i>
+            добавить
+        </div>
+        <div class="ui green labeled icon button" data-bind="click: edit, css: {disabled: selected === null}">
+            <i class="write icon"></i>
+            править
+        </div>
+        <div class="ui red right labeled icon button" data-bind="click: del, css: {disabled: selected === null}">
+            <i class="remove icon"></i>
+            удалить
+        </div>
+</div>
+<datagrid params="dataSource: dataSource, perPage: perPage, onSelect: select"></datagrid>
+<!--ko if: editing !== null-->
+    <div data-bind="dialog: {title: 'Категория', width: 500, height: 400, close: closeEditor}">
+        <form class="ui form">
+            <div class="field">
+                <label>Категория</label>
+                <input type="text" data-bind="textInput: editing.name">
+            </div>
+            <div class="field">
+                <label>Цена</label>
+                <input type="number" data-bind="textInput: editing.price">
+            </div>
+            <div class="field">
+                <label>Обозначение</label>
+                <input type="text" data-bind="textInput: editing.designation">
+            </div>
+            <div class="field">
+                <div class="ui green button" data-bind="click: editOK;">OK</div>
+                <div class="ui button" data-bind="click: closeEditor">Отмена</div>
+            </div>
+        </form>
+    </div>
+<!--/ko-->

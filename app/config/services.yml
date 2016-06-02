@@ -1,0 +1,61 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+#    service_name:
+#        class: AppBundle\Directory\ClassName
+#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
+
+    admin.room_category:
+        class: AppBundle\Admin\RoomCategoryAdmin
+        arguments: [~, DomainBundle\Entity\RoomCategory, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Категория номера, group: Словари }
+    admin.room:
+        class: AppBundle\Admin\RoomAdmin
+        arguments: [~, DomainBundle\Entity\Room, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, label: Номер, group: Словари }
+    admin.provided_service_type:
+            class: AppBundle\Admin\ProvidedServiceTypeAdmin
+            arguments: [~, DomainBundle\Entity\ProvidedServiceType, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Тип услуги, group: Словари }
+    admin.document_type:
+            class: AppBundle\Admin\DocumentTypeAdmin
+            arguments: [~, DomainBundle\Entity\DocumentType, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Тип документа, group: Словари }
+    admin.document:
+            class: AppBundle\Admin\DocumentAdmin
+            arguments: [~, DomainBundle\Entity\Document, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Документ, group: Словари, show_in_dashboard: false}
+    admin.guest:
+            class: AppBundle\Admin\GuestAdmin
+            arguments: [~, DomainBundle\Entity\Guest, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Гость, group: Словари }
+    admin.checkin:
+            class: AppBundle\Admin\CheckInAdmin
+            arguments: [~, DomainBundle\Entity\CheckIn, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Регистрация, group: Общее }
+    admin.contract:
+            class: AppBundle\Admin\ContractAdmin
+            arguments: [~, DomainBundle\Entity\Contract, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Договор, group: Общее,  show_in_dashboard: false }
+    admin.invoice:
+            class: AppBundle\Admin\InvoiceAdmin
+            arguments: [~, DomainBundle\Entity\Invoice, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Счет-фактура, group: Общее,  show_in_dashboard: false }
+    admin.service:
+            class: AppBundle\Admin\ServiceAdmin
+            arguments: [~, DomainBundle\Entity\Service, ~]
+            tags:
+                - { name: sonata.admin, manager_type: orm, label: Услуга, group: Общее,  show_in_dashboard: false }
+

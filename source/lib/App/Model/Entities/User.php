@@ -1,70 +1,139 @@
 <?php
 namespace App\Model\Entities;
 
-use \App\Model\Exceptions\ValidationException;
+use Doctrine\ORM\Mapping as ORM;
+use App\Model\Exceptions\ValidationException;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
 
 /**
- * @Entity(repositoryClass="\App\Model\Repositories\Users")
+ * @ORM\Entity(repositoryClass="\App\Model\Repositories\Users")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string", length=16)
+ * @ORM\DiscriminatorMap({
+ *     "User" = "User",
+ *     "Employee" = "Employee",
+ *     "Customer" = "Customer"
+ * })
  */
 class User extends Super\StringID
 {
     /**
-     * @OneToMany(targetEntity="Article", mappedBy="user")
+     * @ORM\Column(type="datetime", nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime")
      */
-    private $articles;
+    private $created;
 
     /**
-     * Set id
-     * @param string $id
-     * @return User
+     * @ORM\Column(type="string", unique=false, nullable=false)
+     * @Serializer\Expose(false)
      */
-    public function setId($id)
-    {
-        if (empty($id)) {
-            throw new ValidationException('Имя пользователя не может быть пустым!');
-        }
-
-        return parent::setId($id);
-    }
-    
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->articles = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $password;
 
     /**
-     * Add articles
+     * @ORM\Column(type="date", nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("DateTime<Y-m-d>")
+     */
+    private $birthday;
+
+    /**
+     * @ORM\Column(type="string", unique=false, nullable=true)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
+     */
+    private $fullname;
+
+
+    /**
+     * Set created
      *
-     * @param \App\Model\Entities\Article $articles
+     * @param \DateTime $created
      * @return User
      */
-    public function addArticle(\App\Model\Entities\Article $articles)
+    public function setCreated($created)
     {
-        $this->articles[] = $articles;
+        $this->created = $created;
 
         return $this;
     }
 
     /**
-     * Remove articles
+     * Get created
      *
-     * @param \App\Model\Entities\Article $articles
+     * @return \DateTime
      */
-    public function removeArticle(\App\Model\Entities\Article $articles)
+    public function getCreated()
     {
-        $this->articles->removeElement($articles);
+        return $this->created;
     }
 
     /**
-     * Get articles
+     * Set password
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @param string $password
+     * @return User
      */
-    public function getArticles()
+    public function setPassword($password)
     {
-        return $this->articles;
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set birthday
+     *
+     * @param \DateTime $birthday
+     * @return User
+     */
+    public function setBirthday($birthday)
+    {
+        $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * Get birthday
+     *
+     * @return \DateTime
+     */
+    public function getBirthday()
+    {
+        return $this->birthday;
+    }
+
+    /**
+     * Set fullname
+     *
+     * @param string $fullname
+     * @return User
+     */
+    public function setFullname($fullname)
+    {
+        $this->fullname = $fullname;
+
+        return $this;
+    }
+
+    /**
+     * Get fullname
+     *
+     * @return string
+     */
+    public function getFullname()
+    {
+        return $this->fullname;
     }
 }

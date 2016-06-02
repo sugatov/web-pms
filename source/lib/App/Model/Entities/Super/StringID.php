@@ -1,14 +1,19 @@
 <?php
 namespace App\Model\Entities\Super;
 
+use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
+
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class StringID extends Entity
 {
     /**
-     * @Id
-     * @Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="string")
+     * @Serializer\Expose(true)
+     * @Serializer\Type("string")
      */
     private $id = null;
 
@@ -28,7 +33,7 @@ class StringID extends Entity
     /**
      * Get id
      *
-     * @return string 
+     * @return string
      */
     public function getId()
     {

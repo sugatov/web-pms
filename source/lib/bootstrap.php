@@ -8,7 +8,7 @@ use Doctrine\StdErrSQLLogger;
 
 return call_user_func(function () {
     require __DIR__ . '/vendor/autoload.php';
-    
+
     $SL = new Pimple();
 
     $SL['URL'] = function () {
@@ -87,7 +87,9 @@ return call_user_func(function () {
     };
 
     $SL['cache'] = function () use ($SL) {
-        return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
+        // return new \FileCache($SL['LOCAL_DATA'] . '/cache/filecache');
+        // return new \MemcacheCache('localhost');
+        return new \RedisCache();
     };
 
     $SL['storage'] = function () use ($SL) {
@@ -100,31 +102,30 @@ return call_user_func(function () {
 
     $SL['setTimezone'] = function () use ($SL) {
         date_default_timezone_set($SL['config']['app']['timezone']);
+        return true;
     };
 
-    $SL['serializer'] = function () use ($SL) {
-        $cacheDriver = null;
-        if ( ! $SL['config']['app']['debug']) {
+    $SL['annotationReader'] = function () use ($SL) {
+        $SL['annotationReaderAutoloader'];
+        return new \Doctrine\Common\Annotations\AnnotationReader();
+    };
+
+    $SL['annotationReaderAutoloader'] = function () {
+        \Doctrine\Common\Annotations\AnnotationRegistry::registerLoader('class_exists');
+        return true;
+    };
+
+    $SL['serializer'] = function () use ($SL)
+    {
+        $SL['annotationReaderAutoloader'];
+        $debugMode = $SL['config']['app']['debug'];
+        OSS\Configuration::setDebugMode($debugMode);
+        if ( ! $debugMode) {
             $cacheDriver = new OSS\Metadata\Cache\FileCache($SL['LOCAL_DATA'] . '/cache/serializer');
+            OSS\Configuration::setCacheDriver($cacheDriver);
         }
-        return new OSS\Serializer(
-            new OSS\Adapter\MyArrayAdapter(
-                new OSS\Metadata\MetadataFactory(
-                    new OSS\Metadata\Driver\YamlDriver(
-                        new OSS\Metadata\Driver\FileLocator(
-                            array(
-                                'App\\Model\\Entities'        => $SL['LOCAL_LIB'] . '/App/Model/Entities',
-                                'App\\Model\\Entities\\Super' => $SL['LOCAL_LIB'] . '/App/Model/Entities/Super',
-                                '\\'                          => $SL['LOCAL_LIB']
-                            )
-                        )
-                    ),
-                    $cacheDriver,
-                    $SL['config']['app']['debug']
-                )
-            ),
-            new OSS\Adapter\JsonAdapter()
-        );
+        OSS\Configuration::setMode(OSS\Configuration::MEDIUM_STRICT_MODE);
+        return OSS\Configuration::createAnnotationMetadataConfiguration();
     };
 
     $SL['entityManager'] = function () use ($SL) {
@@ -137,24 +138,29 @@ return call_user_func(function () {
 
         $configuration = ORM\Tools\Setup::createAnnotationMetadataConfiguration(
             array($SL['LOCAL_LIB'] . "/App/Model/Entities"),
-            $SL['config']['app']['debug']
+            $SL['config']['app']['debug'],
+            null,
+            null,
+            false
         );
 
         $configuration->addCustomDatetimeFunction('YEAR', 'DoctrineExtensions\Query\Mysql\Year');
         $configuration->addCustomDatetimeFunction('MONTH', 'DoctrineExtensions\Query\Mysql\Month');
         $configuration->addCustomDatetimeFunction('DAY', 'DoctrineExtensions\Query\Mysql\Day');
-        
+
         if ($SL['config']['app']['sqlLog']) {
             $configuration->setSQLLogger(new StdErrSQLLogger());
         }
         $configuration->addEntityNamespace('App', 'App\\Model\\Entities');
+
+        $SL['annotationReaderAutoloader'];
 
         $em = ORM\EntityManager::create(
             $SL['config']['app']['database']['config'],
             $configuration,
             $eventManager
         );
-        
+
         Type::addType('kdate', 'Doctrine\Types\KDateType');
 
         $platform = $em->getConnection()->getDatabasePlatform();
@@ -162,7 +168,7 @@ return call_user_func(function () {
         $platform->markDoctrineTypeCommented(Type::getType('date'));
         $platform->markDoctrineTypeCommented(Type::getType('datetime'));
         $platform->markDoctrineTypeCommented(Type::getType('datetimetz'));
-               
+
         return $em;
     };
 
@@ -226,11 +232,6 @@ return call_user_func(function () {
             $pattern = $route['pattern'];
             $routeMapping = $slim->map($mapTo . $pattern, $callback);
             $routeMapping->setName($key);
-            // Slim version <= 2.5:
-            /*array_walk($route['methods'], function(method) use ($routeMapping) {
-                $routeMapping->via($method);
-            });*/
-            // Slim version >= 2.5:
             $routeMapping->via($route['methods']);
         });
     });
@@ -244,41 +245,41 @@ return call_user_func(function () {
         if (is_subclass_of($className, 'App\\Controller')) {
             return new $className($SL['app'],
                                   $SL['globalViewScope'],
-                                  new \App\ControllerServiceProvider($SL));
+                                  new \App\ServiceProvider($SL));
         }
         throw new \RuntimeException('Have no way to create a controller of this type!');
     });
 
+    $SL['controllers.Rest'] = function () use ($SL) {
+        return new App\Controllers\Rest($SL['app'],
+                                  $SL['globalViewScope'],
+                                  new \App\ServiceProvider($SL),
+                                  $SL['entityManager'],
+                                  $SL['config']['app']['roles']['su']['rest']['readable'],
+                                  $SL['config']['app']['roles']['su']['rest']['writable']);
+    };
+
+    $SL['controllers.Routes'] = function () use ($SL) {
+        return new RoutesController($SL['app'],
+                                    $SL['globalViewScope'],
+                                    new \ServiceProvider($SL));
+    };
+
     $SL['markdownParser'] = function($SL) {
-        return new \MarkdownParser($SL['url'],
-                                   $SL['uploads'],
-                                   $SL['PUBLIC_UPLOADS']);
+        return new \MarkdownParser();
     };
 
     $SL['url'] = function() use ($SL) {
         return new \SlimURL($SL['app']);
     };
 
-    $SL['diff'] = function() {
-        return new \Diff;
-    };
-    
     $SL['users'] = function() use ($SL) {
         return new \App\Services\Users($SL['entityManager']);
-    };
-
-    $SL['articles'] = function() use ($SL) {
-        return new \App\Services\Articles($SL['entityManager'], $SL['diff']);
     };
 
     $SL['uploads'] = function() use ($SL) {
         return new \App\Services\Uploads($SL['entityManager'], $SL['LOCAL_UPLOADS']);
     };
-
-    $SL['statistics'] = function () use ($SL) {
-        return new \App\Services\Statistics(new \App\Services\ServiceProvider($SL));
-    };
-
 
     return $SL;
 });

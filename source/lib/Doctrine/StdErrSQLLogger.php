@@ -2,16 +2,28 @@
 namespace Doctrine;
 
 use Doctrine\DBAL\Logging\SQLLogger;
+use Timer;
 
 class StdErrSQLLogger implements SQLLogger
 {
+    /**
+     * @var Timer
+     */
+    protected $timer;
+
     public function startQuery($sql, array $params = null, array $types = null)
     {
-        error_log("\r\n$sql");
-        error_log(' with ' . var_export($params, true));
+        $this->timer = new Timer();
+        error_log("\033[0;1;36m$sql");
+        if (is_array($params) && is_array($types)) {
+            foreach ($params as $index=>$param) {
+                error_log("\033[0;33m($types[$index]) \033[1m$param\033[0m");
+            }
+        }
     }
- 
+
     public function stopQuery()
     {
+        error_log("\033[0mQuery time: \033[1m".$this->timer->stop()."\033[0m" . PHP_EOL);
     }
 }

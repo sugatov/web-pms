@@ -1,37 +1,29 @@
 {% extends 'template.twig' %}
 
-{% block title %}Главная{% endblock %}
+{% block title %}Панель управления{% endblock %}
 
 {% block body %}
-    <div class="ui two column grid">
-        <div class="column">
-            <div class="ui segment">
-                <h1 class="ui header">Последние статьи</h1>
-                {% include 'articles-list.twig' with {list: list} only %}
+<div id="application">
+    {% verbatim %}
+
+        <h3 class="ui header">Состояние</h3>
+        <i class="ui huge red bug icon"></i>
+        <p>"Шахматка" в разработке.</p>
+
+        <!--ko if: roomCategories-->
+            <div data-bind="dialog: {title: 'Категории номеров', close: hideRoomCategories, width: 600, height: 600}">
+                <room-categories></room-categories>
             </div>
-        </div>
-        <div class="column">
-            <div class="ui segment">
-                <h1 class="ui header">Популярные статьи</h1>
-                <div class="ui top attached tabular menu">
-                    <a class="active item" data-tab="today">Сегодня</a>
-                    <a class="item" data-tab="week">На этой неделе</a>
-                    <a class="item" data-tab="month">В этом месяце</a>
-                    <a class="item" data-tab="alltime">За всё время</a>
-                </div>
-                <div class="ui bottom attached active tab segment" data-tab="today">
-                    {% include 'blocks/popular.twig' with {list: popularToday} only %}
-                </div>
-                <div class="ui bottom attached tab segment" data-tab="week">
-                    {% include 'blocks/popular.twig' with {list: popularThisWeek} only %}
-                </div>
-                <div class="ui bottom attached tab segment" data-tab="month">
-                    {% include 'blocks/popular.twig' with {list: popularThisMonth} only %}
-                </div>
-                <div class="ui bottom attached tab segment" data-tab="alltime">
-                    {% include 'blocks/popular.twig' with {list: popularAllTime} only %}
-                </div>
+        <!--/ko-->
+        <!--ko if: rooms-->
+            <div data-bind="dialog: {title: 'Номеры', close: hideRooms, width: 600, height: 600}">
+                <rooms></rooms>
             </div>
-        </div>
-    </div>
+        <!--/ko-->
+
+        <gridview params="items: list, columns: columns, search: log"></gridview>
+
+    {% endverbatim %}
+</div>
+
 {% endblock %}

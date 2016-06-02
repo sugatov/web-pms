@@ -1,0 +1,71 @@
+rest-options:
+    active: true
+    pattern: "/:class"
+    methods:
+        - "OPTIONS"
+    controller: "Rest"
+    action: "options"
+rest-count:
+    active: true
+    pattern: "/:class/count"
+    methods:
+        - "GET"
+        - "POST"
+    controller: "Rest"
+    action: 'cnt'
+rest-list:
+    active: true
+    pattern: "/:class/list(/:limit(/:offset(/:orderBy(/:desc))))"
+    methods:
+        - "GET"
+    controller: "Rest"
+    action: "lst"
+rest-find:
+    active: true
+    pattern: "/:class/find(/:limit(/:offset(/:orderBy(/:desc))))"
+    methods:
+        - "POST"
+    controller: "Rest"
+    action: "find"
+rest-get-new:
+    active: true
+    pattern: "/:class"
+    methods:
+        - "GET"
+    controller: "Rest"
+    action: "getNew"
+rest-get:
+    active: true
+    pattern: "/:class/:id"
+    methods:
+        - "GET"
+    controller: "Rest"
+    action: "get"
+rest-post:
+    active: true
+    pattern: "/:class"
+    methods:
+        - "POST"
+    controller: "Rest"
+    action: "post"
+rest-put:
+    active: true
+    pattern: "/:class/:id"
+    methods:
+        - "PUT"
+    controller: "Rest"
+    action: "put"
+rest-delete:
+    active: true
+    pattern: "/:class/:id"
+    methods:
+        - "DELETE"
+    controller: "Rest"
+    action: "delete"
+rest-patch:
+    active: true
+    pattern: "/:class/:id"
+    methods:
+        - "PATCH"
+    controller: "Rest"
+    action: "patch"

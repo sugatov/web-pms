@@ -1,0 +1,10 @@
+<div data-bind="dialog: {title: 'RoomCat'}">
+    <h1>Items</h1>
+    <ul data-bind="foreach:items">
+        <li>
+            <label>Item</label>
+           <strong data-bind="text: id"></strong>
+           <span data-bind="text: name"></span> 
+        </li>
+    </ul>
+</div>

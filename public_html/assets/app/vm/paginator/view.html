@@ -1,0 +1,20 @@
+<div class="ui borderless menu">
+  <!--ko if: count > 0-->
+    <div class="item">
+      <div class="ui black icon button" data-bind="click: backward">
+        <i class="left chevron icon"></i>
+      </div>
+    <div class="item">
+      <div class="ui transparent input">
+        <input placeholder="страница" type="number" data-bind="textInput: page, attr: {min: 1, max: count}">
+        <div class="ui label" data-bind="text: '/ ' + count"></div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="ui black icon button" data-bind="click: forward">
+        <i class="right chevron icon"></i>
+      </div>
+    </div>
+    </div>
+  <!--/ko-->
+</div>

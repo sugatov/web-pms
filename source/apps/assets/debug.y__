@@ -1,0 +1,11 @@
+css:
+    - "%PUBLIC_ASSETS%/bower_components/semantic-ui/dist/semantic.css"
+    - "%PUBLIC_ASSETS%/jquery-ui-1.11.4/jquery-ui.css"
+less:
+    - "%PUBLIC_ASSETS%/style.less"
+jsdefer:
+    - "%PUBLIC_ASSETS%/require.config.js"
+    - "%PUBLIC_ASSETS%/require.local.js"
+requirejs:
+    url: "%PUBLIC_ASSETS%/bower_components/requirejs/require.js"
+    main: "%PUBLIC_ASSETS%/main.js"

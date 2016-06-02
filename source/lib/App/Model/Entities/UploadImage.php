@@ -1,18 +1,25 @@
 <?php
 namespace App\Model\Entities;
 
+use Doctrine\ORM\Mapping as ORM;
+use Opensoft\SimpleSerializer\Metadata\Annotations as Serializer;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class UploadImage extends Upload
 {
     /**
-     * @Column(type="integer", name="UploadImage_width", unique=false, nullable=false)
+     * @ORM\Column(type="integer", name="UploadImage_width", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $width = null;
-    
+
     /**
-     * @Column(type="integer", name="UploadImage_height", unique=false, nullable=false)
+     * @ORM\Column(type="integer", name="UploadImage_height", unique=false, nullable=false)
+     * @Serializer\Expose(true)
+     * @Serializer\Type("integer")
      */
     private $height = null;
 
@@ -32,7 +39,7 @@ class UploadImage extends Upload
     /**
      * Get width
      *
-     * @return integer 
+     * @return integer
      */
     public function getWidth()
     {
@@ -55,7 +62,7 @@ class UploadImage extends Upload
     /**
      * Get height
      *
-     * @return integer 
+     * @return integer
      */
     public function getHeight()
     {
